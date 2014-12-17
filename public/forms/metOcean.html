@@ -1,0 +1,78 @@
+<h2>Meteorological and Oceanographic Data</h2>
+
+<form id="metOcean" name="metOcean" action="form/?form=metOcean" method="post" enctype="multipart/form-data" target="iframe">
+	<h3>Field Program: Monitoring of Aquatic Invasive Species</h3>
+	<input name="module" type="hidden" value=""> <!-- the module id number -->
+	<br><br>
+	
+	<date></date>
+	&nbsp;&nbsp;||&nbsp;&nbsp;Trip ID Number: <input type="number" name="tripID" value=>
+	<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.
+	<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p><br>
+	
+	Data Recorder's Name: <input name="recorder_name" type="text" value="" />
+	<br><br>
+	
+	Time (HH:MM): <input name="time_h" type="text" size="3" maxlength="2"/> : <input name="time_m" type="text" size="3" maxlength="2" /> NST 24 hour format
+	<br/><br/>
+	
+	Latitdue --- Deg <input name="latdeg" type="number" min="46" max="52"> (dd) &nbsp;&nbsp;&nbsp;Min <input name="latmin" type="number" min="0" max="59.999" step="0.001"> (m.mmm)<br>
+	Longitude - Deg <input name="londeg" type="number" min="51" max="60"> (dd) &nbsp;&nbsp;&nbsp;Min <input name="lonmin" type="number" min="0" max="59.999" step="0.001"> (m.mmm)<br><br>
+	
+	<u>Meteorological Data:</u><br><br>
+	Air Temperature (c): <input name="air_temp" type="number" min="-20" max="40" step="0.1" />
+	<br/><br/>
+	
+	Average Wind Speed (knots): <input name="wind_spd_avg" type="number" min="0" max="99" step="0.1" />
+	<br/><br/>
+	
+	Wind Direction From (integer &deg; - True N): <input name="wind_dir_from" type="number" min="0" max="360"/>
+	<br/><br/>
+	
+	Cloud Cover:
+	<select name="cloud_cover" value="">
+		<option value="0">&nbsp;0 - Completely Clear - no clouds</option>
+		<option value="1">&nbsp;1 - Scattered Clouds - 10-50% cover</option>
+		<option value="2">&nbsp;2 - Cloudy - 50-90% cover</option>
+		<option value="3">&nbsp;3 - Completely Overcast - 100% cover</option>
+		<option SELECTED value=""></option>
+	</select>
+	<br><br>
+	
+	Barometric Pressure (integer - hPa): <input name="air_pressure" type="number" min="980" max="1050" step="1" />
+	<br><br>
+	
+	<u>Oceanographic Data:</u><br><br>
+	Time of Last High Tide (HH:MM): <input name="tide_high_h" type="text" size="3" maxlength="2" /> : <input name="tide_high_m" type="text" size="3" maxlength="2" /> NST 24 hour format
+	<br/><br/>
+	
+	Tide Height (m): <input name="tide_height" type="number" min="-10" max="10" step="0.1" />
+	<br/><br/>
+	
+	Water Depth (m): <input name="water_depth" type="number" min="0" max="999" step ="0.1" /> to bottom
+	<br/><br/>
+	
+	Secchi Disk Depth (m): <input name="secchi_depth" type="number" min="0" max="99" step="0.1" />
+	<br/><br/>
+	
+	Sea State (Beaufort Scale):
+	<select name="sea_state" value="">
+		<option value="0">&nbsp;0 - Very Calm (glassy) - 0 m waves</option>
+		<option value="1">&nbsp;1 - Calm (rippled) - 0 to 0.1 m waves</option>
+		<option value="2">&nbsp;2 - Smooth (wavelets) - 0.1 to 0.5 m waves</option>
+		<option value="3">&nbsp;3 - Slight (white caps) - 0.5 to 1.25 m waves</option>
+		<option value="4">&nbsp;4 - Moderate - 1.25 to 2.5 m waves</option>
+		<option value="5">&nbsp;5 - Rough (crashing waves) - 2.5 to 4 m waves</option>
+		<option value="6">&nbsp;6 - Very Rough (high waves and swell) - 4 to 6 m waves</option>
+		<option value="7">&nbsp;7 - High - 6 to 9 m waves</option>
+		<option value="8">&nbsp;8 - Very High - 9 to 14 m waves</option>
+		<option value="9">&nbsp;9 - Phenomenal - over 14 m waves</option>
+		<option SELECTED value=""></option>
+	</select>
+	<br/><br/>
+	
+	<button>Enter</button>
+</form>
+<br><br>
+
+<a id="back" href="">[Cancel and Return to Module Menu]</a>

@@ -1,6 +1,6 @@
 <h2>Welcome Aboard!</h2>
 
-<form id="welcomeAboard" name="welcomeAboard" action="form/welcome" method="post" enctype="multipart/form-data" target="iframe">
+<form id="welcomeAboard" name="welcomeAboard" action="form/?form=welcomeAboard" method="post" enctype="multipart/form-data" target="iframe">
 
 <h3>Field Program: Monitoring of Aquatic Invasive Species</h3>
 <input name="module" type="hidden" value=1>
@@ -53,42 +53,9 @@
 	<button>Submit</button>
 </formline>
 </form>
-
+<a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
-	$('#welcomeAboard').validate({
-		submitHandler: function(form) {
-			var formURL = form.attr('action');
-			var formData = new FormData(form[0]);     
-			$.ajax({                                                    
-			    url: formURL,
-			    data: formData,
-			    type: 'POST',
-			    contentType: false,                       
-			    processData: false,                       
-			    success: function (data) {
-				var date = JSON.parse(data);
-				if(data.hey){
-					$('body').append(data);
-				}
-			    },
-			    error: function (err) {
-				console.log("ERROR getting data. Please try again… ");
-			    }                
-			});
-		}
-	})
-	$('input').keyup(function(){
-		$(this).valid();
-	});
 	$(document).ready(function(){
-		//this chunk of stuff will be abstracted out
-		var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-		var now = new Date();
-		var day = now.getDate();
-		day += " " + months[now.getMonth()];
-		day += " " + now.getFullYear();
-		var time = now.toLocaleTimeString();
-		$('date').html("Date: " + day);
-		$('time').html("Time: " + time);
+		
 	});
 </script>

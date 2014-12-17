@@ -1,0 +1,57 @@
+{
+	"html":"<h2>Welcome Aboard!</h2>
+
+			<form id="welcomeAboard" name="welcomeAboard" action="form/welcome" method="post" enctype="multipart/form-data" target="iframe">
+			
+			<h3>Field Program: Monitoring of Aquatic Invasive Species</h3>
+			<input name="module" type="hidden" value=1>
+			
+			<date></date>
+			
+			<time></time><br><br>
+			
+			<formline>
+				<label>School: </label>
+				<select name="school" value="" required>
+					<option value="O\'Donel High School - Mount Pearl">O'Donel High School - Mount Pearl</option>
+					<option value="Holy Trinity High School - Torbay">Holy Trinity High School - Torbay</option>
+					<option value="Bishops College - St. John\'s">Bishops College - St. John's</option>
+					<option value="Holy Spirit High School - Manuels">Holy Spirit High School - Manuels</option>
+					<option value="Queen Elizabeth Regional High School - Foxtrap">Queen Elizabeth Regional High School - Foxtrap</option>
+					<option value="Roncalli Central High School - Avondale">Roncalli Central High School - Avondale</option>
+					<option SELECTED value=""></option>
+				</select>
+			</formline>
+			
+			<formline>
+				<label>Teacher's Name: </label><input name="teacher_name" type="text" value="" required>
+			</formline>
+			
+			<formline>
+				<label>Vessel: </label>
+				<select name="vessel" value="" required>
+					<option value="Coastal Explorer">Coastal Explorer</option>
+					<option value="Seal Islander">Seal Islander</option>
+					<option SELECTED value=""></option>
+				</select>
+			</formline>
+			
+			<formline>
+				<label>Water Body: </label>
+				<select name="waterBody" value="" required>
+					<option value="Bonne Bay">Bonne Bay</option>
+					<option value="Newman Sound">Newman Sound</option>
+					<option value="Conception Bay">Conception Bay</option>
+					<option SELECTED value=""></option>
+				</select>
+			</formline>
+			
+			<formline>
+				<label>Weather: </label><input name="weather" type="text" value="">
+			</formline>
+			
+			<formline>
+				<button>Submit</button>
+			</formline>
+			</form>"
+}
