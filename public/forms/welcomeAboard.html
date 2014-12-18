@@ -1,20 +1,18 @@
 <h2>Welcome Aboard!</h2>
 
+<h3 id="section-title"></h3>
+<date></date><time></time><br><br>
+
 <form id="welcomeAboard" name="welcomeAboard" action="form/?form=welcomeAboard" method="post" enctype="multipart/form-data" target="iframe">
 
-<h3>Field Program: Monitoring of Aquatic Invasive Species</h3>
-<input name="module" type="hidden" value=1>
-
-<date></date>
-
-<time></time><br><br>
+<input id="module" name="module" type="hidden" >
 
 <formline>
-	<label>School: </label>
-	<select name="school" value="" required>
-		<option value="O\'Donel High School - Mount Pearl">O'Donel High School - Mount Pearl</option>
+	<label for="school">School: </label>
+	<select id="school" name="school" value="" required>
+		<option value="O'Donel High School - Mount Pearl">O'Donel High School - Mount Pearl</option>
 		<option value="Holy Trinity High School - Torbay">Holy Trinity High School - Torbay</option>
-		<option value="Bishops College - St. John\'s">Bishops College - St. John's</option>
+		<option value="Bishops College - St. John's">Bishops College - St. John's</option>
 		<option value="Holy Spirit High School - Manuels">Holy Spirit High School - Manuels</option>
 		<option value="Queen Elizabeth Regional High School - Foxtrap">Queen Elizabeth Regional High School - Foxtrap</option>
 		<option value="Roncalli Central High School - Avondale">Roncalli Central High School - Avondale</option>
@@ -23,12 +21,12 @@
 </formline>
 
 <formline>
-	<label>Teacher's Name: </label><input name="teacher_name" type="text" value="" required>
+	<label for="teacher_name">Teacher's Name: </label><input id="teacher_name" name="teacher_name" type="text" value="" autocomplete="off" required>
 </formline>
 
 <formline>
-	<label>Vessel: </label>
-	<select name="vessel" value="" required>
+	<label for="vessel">Vessel: </label>
+	<select id="vessel" name="vessel" value="" required>
 		<option value="Coastal Explorer">Coastal Explorer</option>
 		<option value="Seal Islander">Seal Islander</option>
 		<option SELECTED value=""></option>
@@ -36,8 +34,8 @@
 </formline>
 
 <formline>
-	<label>Water Body: </label>
-	<select name="waterBody" value="" required>
+	<label for="waterBody">Water Body: </label>
+	<select id="waterBody" name="waterBody" value="" required>
 		<option value="Bonne Bay">Bonne Bay</option>
 		<option value="Newman Sound">Newman Sound</option>
 		<option value="Conception Bay">Conception Bay</option>
@@ -46,16 +44,32 @@
 </formline>
 
 <formline>
-	<label>Weather: </label><input name="weather" type="text" value="">
+	<label for="weather">Weather: </label><input id="weather" name="weather" type="text" value="" autocomplete="off">
 </formline>
 
 <formline>
-	<button>Submit</button>
+	<button id='review'>Review Data</button>
 </formline>
 </form>
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
-		
+		var hash = window.location.hash.split("/");
+		if(typeof hash[2] == "string"){
+			switch(hash[2]){
+				case "AIS":
+					$('#module').val(1);
+					$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+					break;
+				case "ecosys":
+					$('#module').val(2);
+					$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+					break;
+				case "wolffish":
+					$('#module').val(3);
+					$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+					break;
+			}
+		}
 	});
 </script>

@@ -1,78 +1,116 @@
 <h2>Meteorological and Oceanographic Data</h2>
 
 <form id="metOcean" name="metOcean" action="form/?form=metOcean" method="post" enctype="multipart/form-data" target="iframe">
-	<h3>Field Program: Monitoring of Aquatic Invasive Species</h3>
-	<input name="module" type="hidden" value=""> <!-- the module id number -->
+	<h3 id="section-title"></h3>
+	<input name="module" type="hidden">
 	<br><br>
 	
-	<date></date>
-	&nbsp;&nbsp;||&nbsp;&nbsp;Trip ID Number: <input type="number" name="tripID" value=>
-	<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.
-	<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p><br>
+	<formline>
+		<date></date><label for="tripID">||Trip ID Number: </label><input id="tripID" type="number" name="tripID" required>
+	</formline>
+	<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
+	<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	
-	Data Recorder's Name: <input name="recorder_name" type="text" value="" />
-	<br><br>
+	<formline>
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" value="" required />
+	</formline>
 	
-	Time (HH:MM): <input name="time_h" type="text" size="3" maxlength="2"/> : <input name="time_m" type="text" size="3" maxlength="2" /> NST 24 hour format
-	<br/><br/>
+	<formline>
+		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="text" size="3" maxlength="2" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="text" size="3" maxlength="2" required/> NST 24 hour format
+	</formline>
 	
-	Latitdue --- Deg <input name="latdeg" type="number" min="46" max="52"> (dd) &nbsp;&nbsp;&nbsp;Min <input name="latmin" type="number" min="0" max="59.999" step="0.001"> (m.mmm)<br>
-	Longitude - Deg <input name="londeg" type="number" min="51" max="60"> (dd) &nbsp;&nbsp;&nbsp;Min <input name="lonmin" type="number" min="0" max="59.999" step="0.001"> (m.mmm)<br><br>
+	<formline>
+		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" required> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br>
+	</formline>
+	<formline>
+		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" required> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br><br>
+	</formline>
 	
 	<u>Meteorological Data:</u><br><br>
-	Air Temperature (c): <input name="air_temp" type="number" min="-20" max="40" step="0.1" />
-	<br/><br/>
+	<formline>
+		<label for="air_temp">Air Temperature (c): </label><input id="air_temp" name="air_temp" type="number" min="-20" max="40" step="0.1" required />
+	</formline>
 	
-	Average Wind Speed (knots): <input name="wind_spd_avg" type="number" min="0" max="99" step="0.1" />
-	<br/><br/>
+	<formline>
+		<label for="wind_spd_avg">Average Wind Speed (knots): </label><input id="wind_spd_avg" name="wind_spd_avg" type="number" min="0" max="99" step="0.1" />
+	</formline>
 	
-	Wind Direction From (integer &deg; - True N): <input name="wind_dir_from" type="number" min="0" max="360"/>
-	<br/><br/>
+	<formline>
+		<label for="wind_dir_from">Wind Direction From (integer &deg; - True N): </label><input id="wind_dir_from" name="wind_dir_from" type="number" min="0" max="360"/>
+	</formline>
 	
-	Cloud Cover:
-	<select name="cloud_cover" value="">
-		<option value="0">&nbsp;0 - Completely Clear - no clouds</option>
-		<option value="1">&nbsp;1 - Scattered Clouds - 10-50% cover</option>
-		<option value="2">&nbsp;2 - Cloudy - 50-90% cover</option>
-		<option value="3">&nbsp;3 - Completely Overcast - 100% cover</option>
-		<option SELECTED value=""></option>
-	</select>
-	<br><br>
+	<formline>
+		<label for="cloud_cover">Cloud Cover:</label>
+		<select id="cloud_cover" name="cloud_cover" value="" required>
+			<option value="0">&nbsp;0 - Completely Clear - no clouds</option>
+			<option value="1">&nbsp;1 - Scattered Clouds - 10-50% cover</option>
+			<option value="2">&nbsp;2 - Cloudy - 50-90% cover</option>
+			<option value="3">&nbsp;3 - Completely Overcast - 100% cover</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
 	
-	Barometric Pressure (integer - hPa): <input name="air_pressure" type="number" min="980" max="1050" step="1" />
-	<br><br>
+	<formline>
+		<label for="air_pressure">Barometric Pressure (integer - hPa): </label><input id="air_pressure" name="air_pressure" type="number" min="980" max="1050" step="1" />
+	</formline>
 	
 	<u>Oceanographic Data:</u><br><br>
-	Time of Last High Tide (HH:MM): <input name="tide_high_h" type="text" size="3" maxlength="2" /> : <input name="tide_high_m" type="text" size="3" maxlength="2" /> NST 24 hour format
-	<br/><br/>
+	<formline>
+		<label for="tide_high_h">Time of Last High Tide (HH:MM): </label><input id="tide_high_h" name="tide_high_h" type="text" size="3" maxlength="2" required/><label for="tide_high_m"> : </label><input id="tide_high_m" name="tide_high_m" type="text" size="3" maxlength="2" required/> NST 24 hour format
+	</formline>
 	
-	Tide Height (m): <input name="tide_height" type="number" min="-10" max="10" step="0.1" />
-	<br/><br/>
+	<formline>
+		<label for="tide_height">Tide Height (m): </label><input id="tide_height" name="tide_height" type="number" min="-10" max="10" step="0.1" required/>
+	</formline>
 	
-	Water Depth (m): <input name="water_depth" type="number" min="0" max="999" step ="0.1" /> to bottom
-	<br/><br/>
+	<formline>
+		<label for="water_depth">Water Depth (m): </label><input id="water_depth" name="water_depth" type="number" min="0" max="999" step ="0.1" required/> to bottom
+	</formline>
 	
-	Secchi Disk Depth (m): <input name="secchi_depth" type="number" min="0" max="99" step="0.1" />
-	<br/><br/>
+	<formline>
+		<label for="secchi_depth">Secchi Disk Depth (m): </label><input id="secchi_depth" name="secchi_depth" type="number" min="0" max="99" step="0.1" />
+	</formline>
 	
-	Sea State (Beaufort Scale):
-	<select name="sea_state" value="">
-		<option value="0">&nbsp;0 - Very Calm (glassy) - 0 m waves</option>
-		<option value="1">&nbsp;1 - Calm (rippled) - 0 to 0.1 m waves</option>
-		<option value="2">&nbsp;2 - Smooth (wavelets) - 0.1 to 0.5 m waves</option>
-		<option value="3">&nbsp;3 - Slight (white caps) - 0.5 to 1.25 m waves</option>
-		<option value="4">&nbsp;4 - Moderate - 1.25 to 2.5 m waves</option>
-		<option value="5">&nbsp;5 - Rough (crashing waves) - 2.5 to 4 m waves</option>
-		<option value="6">&nbsp;6 - Very Rough (high waves and swell) - 4 to 6 m waves</option>
-		<option value="7">&nbsp;7 - High - 6 to 9 m waves</option>
-		<option value="8">&nbsp;8 - Very High - 9 to 14 m waves</option>
-		<option value="9">&nbsp;9 - Phenomenal - over 14 m waves</option>
-		<option SELECTED value=""></option>
-	</select>
-	<br/><br/>
+	<formline>
+		<label for="sea_state">Sea State (Beaufort Scale): </label>
+		<select id="sea_state" name="sea_state" value="" required>
+			<option value="0">&nbsp;0 - Very Calm (glassy) - 0 m waves</option>
+			<option value="1">&nbsp;1 - Calm (rippled) - 0 to 0.1 m waves</option>
+			<option value="2">&nbsp;2 - Smooth (wavelets) - 0.1 to 0.5 m waves</option>
+			<option value="3">&nbsp;3 - Slight (white caps) - 0.5 to 1.25 m waves</option>
+			<option value="4">&nbsp;4 - Moderate - 1.25 to 2.5 m waves</option>
+			<option value="5">&nbsp;5 - Rough (crashing waves) - 2.5 to 4 m waves</option>
+			<option value="6">&nbsp;6 - Very Rough (high waves and swell) - 4 to 6 m waves</option>
+			<option value="7">&nbsp;7 - High - 6 to 9 m waves</option>
+			<option value="8">&nbsp;8 - Very High - 9 to 14 m waves</option>
+			<option value="9">&nbsp;9 - Phenomenal - over 14 m waves</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
 	
-	<button>Enter</button>
+	<formline>
+		<button id="review">Enter</button>
+	</formline>
 </form>
-<br><br>
-
-<a id="back" href="">[Cancel and Return to Module Menu]</a>
+<a id="back" href="#!/program/AIS">[Cancel and Return to Module Menu]</a>
+<script>
+	$(document).ready(function(){
+		var hash = window.location.hash.split("/");
+		if(typeof hash[2] == "string"){
+			switch(hash[2]){
+				case "AIS":
+					$('#module').val(1);
+					$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+					break;
+				case "ecosys":
+					$('#module').val(2);
+					$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+					break;
+				case "wolffish":
+					$('#module').val(3);
+					$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+					break;
+			}
+		}
+	});
+</script>

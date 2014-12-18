@@ -15,4 +15,13 @@ iframe{
 
 formline{
 	display:block;
+	margin:10px 0;
+}
+
+button{
+	cursor:pointer;
+}
+
+#back{
+	display:block;
 }

@@ -40,47 +40,69 @@ var makeForm = function(formName){
 		setupValidationHandlers(formName);
 	});
 };
+
 var setupValidationHandlers = function(formName){
 	$('#'+formName).validate({
 		submitHandler: function(form){
-			var formURL = $('#'+formName).attr('action');
-			var formData = new FormData($('#'+formName)[0]); 
-			console.log(formURL);
-			$.ajax({                                                    
-				url: formURL,
-				data: formData,
-				type: 'POST',
-				contentType: false,                       
-				processData: false,                       
-				success: function (data) {
-					console.log(data);
-					var data = JSON.parse(data);
-					console.log("hi");
-					if(data.success){
-						console.log(data.success);
-						$('#content').fadeOut(110, function(){
-							$(this).html("Data submitted successfully").fadeIn(110).delay(800).fadeOut(110, function(){
-								var hash = window.location.hash.split("/");
-								window.location.hash = hash[0] + "/" + hash[1] + "/" + hash[2];
+			$('#review').fadeOut(110, function(){
+				$("<formline />").insertBefore($('#back')).append(
+					$("<button id='revise'>Revise</button>").hide().fadeIn(110).insertBefore($('#back')).click(function(){
+						$('#revise, #submit').each(function(){$(this).fadeOut(110, function(){$(this).remove();$('#review').fadeIn(110)})});
+						var $labels = $('label');
+						$labels.each(function(i){
+							var $label = $(this);
+							$(this).find('span').fadeOut(110, function(){
+								$(this).remove();
+								$('#'+$label.attr('for')).fadeIn(110);
 							});
 						});
-					}
-					else if(data.error){
-						console.log(data.error);
-					}
-					else{
-						console.log("Unknown error in submitting form");
-					}
-				},
-				error: function (err) {
-					console.log("ERROR getting data. Please try again… ");
-				}
+					})
+				);
+				$("<button id='submit'>Submit</button>").hide().fadeIn(110).insertAfter($('#revise')).click(function(){
+					var formURL = $('#'+formName).attr('action');
+					var formData = new FormData($('#'+formName)[0]); 
+					$.ajax({                                                    
+						url: formURL,
+						data: formData,
+						type: 'POST',
+						contentType: false,                       
+						processData: false,                       
+						success: function (data) {
+							console.log(data);
+							var data = JSON.parse(data);
+							if(data.success){
+								console.log(data.success);
+								$('#content').fadeOut(110, function(){
+									$(this).html("Data submitted successfully").fadeIn(110).delay(800).fadeOut(110, function(){
+										var hash = window.location.hash.split("/");
+										window.location.hash = hash[0] + "/" + hash[1] + "/" + hash[2];
+									});
+								});
+							}
+							else if(data.error){
+								console.log(data.error);
+							}
+							else{
+								console.log("Unknown error in submitting form");
+							}
+						},
+						error: function (err) {
+							console.log("ERROR getting data. Please try again… ");
+						}
+					});
+				});
+			});
+			$('form label').each(function(i, label){
+				var val = $(this).attr('for');
+				$('#'+val).fadeOut(110, function(){
+					$("<span/>").text($(this).val()).hide().fadeIn(110).appendTo(label);
+				});
 			});
 		}
 	});
-	$('#' + formName + ' input').keyup(function(){
-		$(this).valid();
-	});
+	//$('#' + formName + ' input').keyup(function(){
+	//	$(this).valid();
+	//});
 };
 
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
