@@ -16,14 +16,17 @@
 	</formline>
 	
 	<formline>
-		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="text" size="3" maxlength="2" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="text" size="3" maxlength="2" required/> NST 24 hour format
+		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="number" size="3" min="0" max="23" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" size="3" min="0" max="59" required/> NST 24 hour format
+		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
 	
 	<formline>
 		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" required> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br>
+		<input id="lat" name="lat" type="hidden" />
 	</formline>
 	<formline>
 		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" required> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br><br>
+		<input id="lon" name="lon" type="hidden" />
 	</formline>
 	
 	<u>Meteorological Data:</u><br><br>
@@ -56,7 +59,8 @@
 	
 	<u>Oceanographic Data:</u><br><br>
 	<formline>
-		<label for="tide_high_h">Time of Last High Tide (HH:MM): </label><input id="tide_high_h" name="tide_high_h" type="text" size="3" maxlength="2" required/><label for="tide_high_m"> : </label><input id="tide_high_m" name="tide_high_m" type="text" size="3" maxlength="2" required/> NST 24 hour format
+		<label for="tide_high_h">Time of Last High Tide (HH:MM): </label><input id="tide_high_h" name="tide_high_h" type="number" size="3" min="0" max="23" required/><label for="tide_high_m"> : </label><input id="tide_high_m" name="tide_high_m" type="number" size="3" min="0" max="59" required/> NST 24 hour format
+		<input id="tide_high_full" name="tide_high_full" type="hidden" />
 	</formline>
 	
 	<formline>
@@ -112,5 +116,15 @@
 					break;
 			}
 		}
+		var timeListener = function(prefix){
+			$('#'+prefix+'_h, #'+prefix+'_m').keyup(function(){
+				var h = ($('#'+prefix+'_h').val().length > 1) ? $('#'+prefix+'_h').val() : ($('#'+prefix+'_h').val().length == 1) ? "0"+$('#'+prefix+'_h').val() : "00";
+				var m = ($('#'+prefix+'_m').val().length > 1) ? $('#'+prefix+'_m').val() : ($('#'+prefix+'_m').val().length == 1) ? "0"+$('#'+prefix+'_m').val() : "00";
+				$('#'+prefix+'_full').val(h + ":" + m);
+			});
+		};
+		timeListener("time");
+		timeListener("tide_high");
+		
 	});
 </script>

@@ -44,6 +44,12 @@ var makeForm = function(formName){
 var setupValidationHandlers = function(formName){
 	$('#'+formName).validate({
 		submitHandler: function(form){
+			if($('#latdeg').length > 0){ //copy the lat&lon to decimal format field
+				var lat = parseInt($('#latdeg').val()) + parseInt($('#latmin').val())/60;
+				var lon = parseInt($('#londeg').val()) + parseInt($('#lonmin').val())/60;
+				$('#lat').val(lat);
+				$('#lon').val(lon);
+			}
 			$('#review').fadeOut(110, function(){
 				$("<formline />").insertBefore($('#back')).append(
 					$("<button id='revise'>Revise</button>").hide().fadeIn(110).insertBefore($('#back')).click(function(){
