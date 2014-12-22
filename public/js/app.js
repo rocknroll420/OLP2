@@ -50,9 +50,14 @@ var setupValidationHandlers = function(formName){
 				$('#lat').val(lat);
 				$('#lon').val(lon);
 			}
-			$('#review').fadeOut(110, function(){
+			$('#'+formName).find('input[time]').each(function(){ //make the time into a HH:MM string and put it in the hidden field
+				var $for = $('#'+$(this).attr('for'));
+				var t = ($(this).val().length > 1) ? $(this).val() : ($(this).val().length == 1) ? "0"+$(this).val() : "00";
+				($(this).attr('time') == "hr") ? $for.val(t + ":") : $for.val($for.val() + t);
+			});
+			$('#review').fadeOut(110, function(){ //put in the new buttons
 				$("<formline />").insertBefore($('#back')).append(
-					$("<button id='revise'>Revise</button>").hide().fadeIn(110).insertBefore($('#back')).click(function(){
+					$("<button id='revise'>Revise</button>").hide().fadeIn(110).insertBefore($('#back')).click(function(){ //revise handler
 						$('#revise, #submit').each(function(){$(this).fadeOut(110, function(){$(this).remove();$('#review').fadeIn(110)})});
 						var $labels = $('label');
 						$labels.each(function(i){
@@ -64,7 +69,7 @@ var setupValidationHandlers = function(formName){
 						});
 					})
 				);
-				$("<button id='submit'>Submit</button>").hide().fadeIn(110).insertAfter($('#revise')).click(function(){
+				$("<button id='submit'>Submit</button>").hide().fadeIn(110).insertAfter($('#revise')).click(function(){ //final submit handler
 					var formURL = $('#'+formName).attr('action');
 					var formData = new FormData($('#'+formName)[0]); 
 					$.ajax({                                                    
@@ -98,7 +103,7 @@ var setupValidationHandlers = function(formName){
 					});
 				});
 			});
-			$('form label').each(function(i, label){
+			$('form label').each(function(i, label){ //show the user what they submitted
 				var val = $(this).attr('for');
 				$('#'+val).fadeOut(110, function(){
 					$("<span/>").text($(this).val()).hide().fadeIn(110).appendTo(label);
@@ -106,13 +111,10 @@ var setupValidationHandlers = function(formName){
 			});
 		}
 	});
-	//$('#' + formName + ' input').keyup(function(){
-	//	$(this).valid();
-	//});
 };
 
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var updateDateTime = function(){
+var updateDateTime = function(){ //date formatting
 	var now = new Date();
 	var day = now.getDate();
 	day += " " + months[now.getMonth()];
@@ -122,7 +124,7 @@ var updateDateTime = function(){
 	$('time').html("Time: " + time);
 };
 
-$(document).ready(function(){
+$(document).ready(function(){ //init
 	updateContent('pages/front.html');
 });
 })(jQuery);

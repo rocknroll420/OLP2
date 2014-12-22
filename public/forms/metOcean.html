@@ -16,7 +16,7 @@
 	</formline>
 	
 	<formline>
-		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="number" size="3" min="0" max="23" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" size="3" min="0" max="59" required/> NST 24 hour format
+		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="number" size="3" min="0" max="23" time="hr" for="time_full" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" size="3" min="0" max="59" time="min" for="time_full" required/> NST 24 hour format
 		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
 	
@@ -45,10 +45,10 @@
 	<formline>
 		<label for="cloud_cover">Cloud Cover:</label>
 		<select id="cloud_cover" name="cloud_cover" value="" required>
-			<option value="0">&nbsp;0 - Completely Clear - no clouds</option>
-			<option value="1">&nbsp;1 - Scattered Clouds - 10-50% cover</option>
-			<option value="2">&nbsp;2 - Cloudy - 50-90% cover</option>
-			<option value="3">&nbsp;3 - Completely Overcast - 100% cover</option>
+			<option value="0">0 - Completely Clear - no clouds</option>
+			<option value="1">1 - Scattered Clouds - 10-50% cover</option>
+			<option value="2">2 - Cloudy - 50-90% cover</option>
+			<option value="3">3 - Completely Overcast - 100% cover</option>
 			<option SELECTED value=""></option>
 		</select>
 	</formline>
@@ -59,7 +59,7 @@
 	
 	<u>Oceanographic Data:</u><br><br>
 	<formline>
-		<label for="tide_high_h">Time of Last High Tide (HH:MM): </label><input id="tide_high_h" name="tide_high_h" type="number" size="3" min="0" max="23" required/><label for="tide_high_m"> : </label><input id="tide_high_m" name="tide_high_m" type="number" size="3" min="0" max="59" required/> NST 24 hour format
+		<label for="tide_high_h">Time of Last High Tide (HH:MM): </label><input id="tide_high_h" name="tide_high_h" type="number" size="3" min="0" max="23" time="hr" for="tide_high_full" required/><label for="tide_high_m"> : </label><input id="tide_high_m" name="tide_high_m" type="number" size="3" min="0" max="59" time="min" for="tide_high_full" required/> NST 24 hour format
 		<input id="tide_high_full" name="tide_high_full" type="hidden" />
 	</formline>
 	
@@ -78,16 +78,16 @@
 	<formline>
 		<label for="sea_state">Sea State (Beaufort Scale): </label>
 		<select id="sea_state" name="sea_state" value="" required>
-			<option value="0">&nbsp;0 - Very Calm (glassy) - 0 m waves</option>
-			<option value="1">&nbsp;1 - Calm (rippled) - 0 to 0.1 m waves</option>
-			<option value="2">&nbsp;2 - Smooth (wavelets) - 0.1 to 0.5 m waves</option>
-			<option value="3">&nbsp;3 - Slight (white caps) - 0.5 to 1.25 m waves</option>
-			<option value="4">&nbsp;4 - Moderate - 1.25 to 2.5 m waves</option>
-			<option value="5">&nbsp;5 - Rough (crashing waves) - 2.5 to 4 m waves</option>
-			<option value="6">&nbsp;6 - Very Rough (high waves and swell) - 4 to 6 m waves</option>
-			<option value="7">&nbsp;7 - High - 6 to 9 m waves</option>
-			<option value="8">&nbsp;8 - Very High - 9 to 14 m waves</option>
-			<option value="9">&nbsp;9 - Phenomenal - over 14 m waves</option>
+			<option value="0">0 - Very Calm (glassy) - 0 m waves</option>
+			<option value="1">1 - Calm (rippled) - 0 to 0.1 m waves</option>
+			<option value="2">2 - Smooth (wavelets) - 0.1 to 0.5 m waves</option>
+			<option value="3">3 - Slight (white caps) - 0.5 to 1.25 m waves</option>
+			<option value="4">4 - Moderate - 1.25 to 2.5 m waves</option>
+			<option value="5">5 - Rough (crashing waves) - 2.5 to 4 m waves</option>
+			<option value="6">6 - Very Rough (high waves and swell) - 4 to 6 m waves</option>
+			<option value="7">7 - High - 6 to 9 m waves</option>
+			<option value="8">8 - Very High - 9 to 14 m waves</option>
+			<option value="9">9 - Phenomenal - over 14 m waves</option>
 			<option SELECTED value=""></option>
 		</select>
 	</formline>
@@ -116,15 +116,5 @@
 					break;
 			}
 		}
-		var timeListener = function(prefix){
-			$('#'+prefix+'_h, #'+prefix+'_m').keyup(function(){
-				var h = ($('#'+prefix+'_h').val().length > 1) ? $('#'+prefix+'_h').val() : ($('#'+prefix+'_h').val().length == 1) ? "0"+$('#'+prefix+'_h').val() : "00";
-				var m = ($('#'+prefix+'_m').val().length > 1) ? $('#'+prefix+'_m').val() : ($('#'+prefix+'_m').val().length == 1) ? "0"+$('#'+prefix+'_m').val() : "00";
-				$('#'+prefix+'_full').val(h + ":" + m);
-			});
-		};
-		timeListener("time");
-		timeListener("tide_high");
-		
 	});
 </script>
