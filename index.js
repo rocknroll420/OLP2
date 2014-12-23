@@ -101,6 +101,33 @@ app.post('/form', function(req, res){
 	});
 });
 
+app.get('/select', function(req, res){
+	console.log(util.inspect(req.query));
+	var select = (typeof form_sql.sql[req.query.s] == "object") ? form_sql.sql[req.query.s] : {type:"Nope"};
+	if(select.type == "select"){
+		var msg;
+		var connection = mysql.createConnection(db);
+		connection.connect();
+		connection.query(select.query, function(err, rows, fields){
+			if(err){
+				console.log("Error selecting " + select.query);
+				msg = {error:"Selection failed"};
+			}
+			else{
+				console.log("Selected " + req.query.s);
+				msg = select.handler(err, rows, fields);
+				msg = {success:msg};
+			}
+			connection.end();
+			res.end(JSON.stringify(msg));
+		});
+	}
+	else{
+		console.log("Nothing to select");
+		res.end(JSON.stringify({error:"Nothing to select"}));
+	}
+});
+
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });

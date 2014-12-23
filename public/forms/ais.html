@@ -1,0 +1,70 @@
+<h2>Aquatic Invasive Species (AIS) Survey</h2>
+
+<!---<form method="POST" name="aisSurvey" action="aisCheck.php?ROV=<?php echo $rov; ?>">--->
+<form id="ais" name="ais" action="form/?form=ais" method="post" enctype="multipart/form-data" target="iframe">
+	<h3 id="section-title"></h3>
+	<u><b><!---<font color="red"><?php //echo $rovmessage; ?></font>---></b></u> - If you chose the wrong type of Survey press "Cancel" at the bottom.<br><br>
+	Date: <date></date>
+	<br><br>
+
+	<formline>
+		Trip ID Number: <input type="number" id="tripID" name="tripID" required>
+		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
+		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
+	</formline>
+	
+	<formline>
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required/>
+	</formline>
+	
+	<formline>
+		<label for="time_h">Observation Time (HH:MM) </label><input id="time_h" name="time_h" type="number" size="3" max="23" min="0" required><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" size="3" max="59" min="0"> <timezone></timezone> 24 hour format
+		<input id="time_full" name="time_full" type="hidden" />
+	</formline>
+	
+
+	Observation Position:<br>
+	<formline>
+		<label for="latdeg">Latitude --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" required> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)
+		<input id="lat" name="lat" type="hidden" />
+	</formline>
+	<formline>
+		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" required> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)
+		<input id="lon" name="lon" type="hidden" />
+	</formline>
+	
+	<u>Aquatic Invasive Species Observed:</u><br><br>
+	<ul id="ais-list">
+	</ul>
+
+	<button id="review">Review</button>
+</form>
+<a id="back" href="#!/program/AIS">[Cancel and Return to Module Menu]</a>
+<script>
+	$(document).ready(function(){
+		$.get('select/?s=get_ais_names', function(data){
+			data = JSON.parse(data);
+			for(var x in data.success){
+				$('#ais-list').append($("<formline/>")
+					.append($('<span/>').html(data.success[x].name + "<i>("+data.success[x].sci_name+")</i>"))
+					.append($('<input type="radio" value="n-a" />').prop('checked', true).attr('id', 'ais-'+x+'-na').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-na" type="radio"/>').text("Did Not Check"))
+					.append($('<input type="radio" value="no"/>').attr('id', 'ais-'+x+'-no').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-no" type="radio"/>').text("No"))
+					.append($('<input type="radio" value="yes"/>').attr('id', 'ais-'+x+'-yes').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-yes" type="radio"/>').text("Yes"))
+					.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT: ").hide()).append($('<input type="number" max="999" min="0" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
+				);
+				$('input[type="radio"][name="ais-'+x+'-obs"]').change(function(){
+					var i = $(this).attr('id').split("-")[1];
+					if($(this).val() == "yes"){
+						$('#ais-'+i+'-cnt').fadeIn(110);
+						$('label[for="ais-'+i+'-cnt"]').fadeIn(110);
+					}
+					else{
+						$('#ais-'+i+'-cnt').fadeOut(110);
+						$('label[for="ais-'+i+'-cnt"]').fadeOut(110);
+					}
+				});
+			}
+			
+		});
+	});
+</script>

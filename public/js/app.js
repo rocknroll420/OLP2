@@ -62,10 +62,30 @@ var setupValidationHandlers = function(formName){
 						var $labels = $('label');
 						$labels.each(function(i){
 							var $label = $(this);
-							$(this).find('span').fadeOut(110, function(){
-								$(this).remove();
-								$('#'+$label.attr('for')).fadeIn(110);
-							});
+							if($(this).attr('type') == "radio"){
+								var radio = $(this).attr('for');
+								if($('#'+radio).prop('checked')){
+									$('#'+radio).unbind('click');
+								}
+								else{
+									$('#'+radio).removeClass('faded').prop('disabled', false);
+									$(this).removeClass('faded');
+								}
+							}
+							else{
+								$(this).find('span').fadeOut(110, function(){
+									$(this).remove();
+									if($label.attr('type') == "count"){
+										var i = $label.attr('for').split("-")[1];
+										if($('#ais-'+i+'-yes').prop('checked')){
+											$('#ais-'+i+'-cnt').fadeIn(110);
+										}
+									}
+									else{
+										$('#'+$label.attr('for')).fadeIn(110);
+									}
+								});
+							}
 						});
 					})
 				);
@@ -104,10 +124,22 @@ var setupValidationHandlers = function(formName){
 				});
 			});
 			$('form label').each(function(i, label){ //show the user what they submitted
-				var val = $(this).attr('for');
-				$('#'+val).fadeOut(110, function(){
-					$("<span/>").text($(this).val()).hide().fadeIn(110).appendTo(label);
-				});
+				if($(this).attr('type') == "radio"){
+					var radio = $(this).attr('for');
+					if($('#'+radio).prop('checked')){
+						$('#'+radio).click(function(e){e.preventDefault();});
+					}
+					else{
+						$('#'+radio).addClass('faded').prop('disabled', true);
+						$(this).addClass('faded');
+					}
+				}
+				else{
+					var val = $(this).attr('for');
+					$('#'+val).fadeOut(110, function(){
+						$("<span/>").text($(this).val()).hide().fadeIn(110).appendTo(label);
+					});
+				}
 			});
 		}
 	});
