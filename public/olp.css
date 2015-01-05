@@ -29,3 +29,11 @@ button{
 .faded{
 	opacity:0.5;
 }
+
+.red{
+	color:red;
+}
+
+.underline{
+	text-decoration:underline;
+}

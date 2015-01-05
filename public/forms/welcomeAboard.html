@@ -71,5 +71,7 @@
 					break;
 			}
 		}
+		var event = new CustomEvent("form-ready", {"detail": "welcomeAboard"});
+		document.dispatchEvent(event);
 	});
 </script>

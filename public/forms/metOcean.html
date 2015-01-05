@@ -16,16 +16,16 @@
 	</formline>
 	
 	<formline>
-		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="number" size="3" min="0" max="23" time="hr" for="time_full" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" size="3" min="0" max="59" time="min" for="time_full" required/> NST 24 hour format
+		<label for="time_h">Time (HH:MM): </label><input id="time_h" name="time_h" type="number"  special="pos int" size="3" min="0" max="23" time="hr" for="time_full" required/><label for="time_m"> : </label><input id="time_m" name="time_m" type="number"  special="pos int" size="3" min="0" max="59" time="min" for="time_full" required/> NST 24 hour format
 		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
 	
 	<formline>
-		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" required> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br>
+		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" special="pos int" min="46" max="52" required> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br>
 		<input id="lat" name="lat" type="hidden" />
 	</formline>
 	<formline>
-		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" required> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br><br>
+		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" special="pos int" min="51" max="60" required> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)<br><br>
 		<input id="lon" name="lon" type="hidden" />
 	</formline>
 	
@@ -116,5 +116,7 @@
 					break;
 			}
 		}
+		var event = new CustomEvent("form-ready", {"detail": "metOcean"});
+		document.dispatchEvent(event);
 	});
 </script>

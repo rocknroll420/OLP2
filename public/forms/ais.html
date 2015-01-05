@@ -3,7 +3,7 @@
 <!---<form method="POST" name="aisSurvey" action="aisCheck.php?ROV=<?php echo $rov; ?>">--->
 <form id="ais" name="ais" action="form/?form=ais" method="post" enctype="multipart/form-data" target="iframe">
 	<h3 id="section-title"></h3>
-	<u><b><!---<font color="red"><?php //echo $rovmessage; ?></font>---></b></u> - If you chose the wrong type of Survey press "Cancel" at the bottom.<br><br>
+	<u><b><span id="survey-type" class="red underline">------------------</span></b></u> - If you chose the wrong type of Survey press "Cancel" at the bottom.<br><br>
 	Date: <date></date>
 	<br><br>
 
@@ -50,7 +50,7 @@
 					.append($('<input type="radio" value="n-a" />').prop('checked', true).attr('id', 'ais-'+x+'-na').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-na" type="radio"/>').text("Did Not Check"))
 					.append($('<input type="radio" value="no"/>').attr('id', 'ais-'+x+'-no').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-no" type="radio"/>').text("No"))
 					.append($('<input type="radio" value="yes"/>').attr('id', 'ais-'+x+'-yes').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-yes" type="radio"/>').text("Yes"))
-					.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT: ").hide()).append($('<input type="number" max="999" min="0" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
+					.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT: ").hide()).append($('<input type="number" special="pos int" max="999" min="0" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
 				);
 				$('input[type="radio"][name="ais-'+x+'-obs"]').change(function(){
 					var i = $(this).attr('id').split("-")[1];
@@ -64,7 +64,29 @@
 					}
 				});
 			}
-			
+			var hash = window.location.hash.split('/');
+			if(typeof hash[2] == "string"){
+				switch(hash[2]){
+					case "AIS":
+						$('#module').val(1);
+						$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+						break;
+					case "ecosys":
+						$('#module').val(2);
+						$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+						break;
+					case "wolffish":
+						$('#module').val(3);
+						$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+						break;
+				}
+			}
+			if(typeof hash[5] == "string"){
+				var surveyType = (hash[5] == "ROV") ? "ROV Survey" : "Shoreline Survey";
+				$('#survey-type').hide().html(surveyType).fadeIn(10);
+			}
+			var event = new CustomEvent("form-ready", {"detail": "ais"});
+			document.dispatchEvent(event);
 		});
 	});
 </script>

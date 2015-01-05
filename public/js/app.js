@@ -32,14 +32,22 @@ var updateContent = function(newContent, cb){
 	});
 };
 
+var planktonProgress = {"AIS": 1, "ecosys": 1, "wolffish": 0}; //stores stage of plankton form we be at
 var makeForm = function(formName){
+	var hash = window.location.hash.split("/");
 	updateContent('forms/'+formName+'.html', function(){
-		var hash = window.location.hash.split("/");
+		if(formName == "plankton"){ //a bit messy but going to be like this unless we add another multi part form
+			$('#plankton-form-'+planktonProgress[hash[2]]).show();
+		}
 		$('#back').attr('href', hash[0] + "/" + hash[1] + "/" + hash[2]);
 		updateDateTime();
-		setupValidationHandlers(formName);
 	});
 };
+
+document.addEventListener('form-ready', function(e){
+	setupValidationHandlers(e.detail);
+	setupBadInputPrevention(e.detail);
+});
 
 var setupValidationHandlers = function(formName){
 	$('#'+formName).validate({
@@ -145,6 +153,47 @@ var setupValidationHandlers = function(formName){
 	});
 };
 
+var setupBadInputPrevention = function(formName){
+	var getSpecialInts = function(specials){
+		var ints = [];
+		for(var item in specials){
+			switch(specials[item]){
+				case "pos":
+					ints.push(173);
+					break;
+				case "int":
+					ints.push(190);
+					break;
+				default:
+					break;
+			}
+		}
+		return ints;
+	};
+	$('#'+formName+' input').each(function(){
+		if($(this).attr('type') == "number"){
+			$(this).keydown(function(e){
+				var specials = false;
+				if(typeof $(this).attr('special') != "undefined"){
+					specials = $(this).attr('special').split(" ");
+				}
+				if(!shift && (e.which == 173 || e.which == 190 || (e.which >= 48 && e.which <= 57) || e.which == 8 || e.which == 9)){
+					if(specials){
+						var ints = getSpecialInts(specials);
+						if(ints.indexOf(e.which) > -1){
+							e.preventDefault();
+							return false;
+						}
+					}
+					return true;
+				}
+				e.preventDefault();
+				return false;
+			});
+		}
+	});
+};
+
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var updateDateTime = function(){ //date formatting
 	var now = new Date();
@@ -155,6 +204,13 @@ var updateDateTime = function(){ //date formatting
 	$('date').html("Date: " + day);
 	$('time').html("Time: " + time);
 };
+
+var shift = false; //so we know if shift is down
+$(document).keydown(function(e){
+	if(e.which == 16) shift = true;
+}).keyup(function(e){
+	if(shift && e.which == 16) shift = false;
+});
 
 $(document).ready(function(){ //init
 	updateContent('pages/front.html');
