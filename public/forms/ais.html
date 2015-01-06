@@ -85,7 +85,7 @@
 				var surveyType = (hash[5] == "ROV") ? "ROV Survey" : "Shoreline Survey";
 				$('#survey-type').hide().html(surveyType).fadeIn(10);
 			}
-			var event = new CustomEvent("form-ready", {"detail": "ais"});
+			var event = new CustomEvent("form-ready", {"detail": {"name": "ais"}});
 			document.dispatchEvent(event);
 		});
 	});

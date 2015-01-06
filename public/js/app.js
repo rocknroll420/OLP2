@@ -32,41 +32,83 @@ var updateContent = function(newContent, cb){
 	});
 };
 
-var planktonProgress = {"AIS": 1, "ecosys": 1, "wolffish": 0}; //stores stage of plankton form we be at
 var makeForm = function(formName){
 	var hash = window.location.hash.split("/");
 	updateContent('forms/'+formName+'.html', function(){
-		if(formName == "plankton"){ //a bit messy but going to be like this unless we add another multi part form
-			$('#plankton-form-'+planktonProgress[hash[2]]).show();
-		}
 		$('#back').attr('href', hash[0] + "/" + hash[1] + "/" + hash[2]);
 		updateDateTime();
 	});
 };
 
+var multiForms = {}; //stores states we be at for each multiform encountered
 document.addEventListener('form-ready', function(e){
-	setupValidationHandlers(e.detail);
-	setupBadInputPrevention(e.detail);
+	var hash = window.location.hash.split("/");
+	if(typeof hash[2] == "string"){
+		switch(hash[2]){
+			case "AIS":
+				$('#module').val(1);
+				$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+				break;
+			case "ecosys":
+				$('#module').val(2);
+				$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+				break;
+			case "wolffish":
+				$('#module').val(3);
+				$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+				break;
+		}
+	}
+	if(e.detail.isMulti){
+		if(typeof multiForms[e.detail.name] == "undefined"){
+			var progress = {};
+			progress[hash[2]] = 0;
+			multiForms[e.detail.name] = progress;
+		}
+		else if(typeof multiForms[e.detail.name][hash[2]] == "undefined"){
+			multiForms[e.detail.name][hash[2]] = 0;
+		}
+		var event = new CustomEvent('multi-change', {"detail": {"state": multiForms[e.detail.name][hash[2]], "name": hash[4], "program": hash[2]}});
+		document.getElementById(e.detail.name).dispatchEvent(event);
+		$forms = $('form');
+		$forms.each(function(){
+			setupValidationHandlers($(this).attr('id'));
+			setupBadInputPrevention($(this).attr('id'));
+		});
+	}
+	else{
+		setupValidationHandlers(e.detail.name);
+		setupBadInputPrevention(e.detail.name);
+	}
+});
+
+document.addEventListener('multi-change', function(e){ //multiforms emit this type of event when they are done a certain task
+	console.log(e.detail);
+	multiForms[e.detail.name][e.detail.program] = e.detail.state; //update state globals to save position
+	updateDateTime(); 
+	var event = new CustomEvent('multi-change', {"detail": e.detail});  //let the form know state is saved
+	document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
 });
 
 var setupValidationHandlers = function(formName){
 	$('#'+formName).validate({
 		submitHandler: function(form){
-			if($('#latdeg').length > 0){ //copy the lat&lon to decimal format field
-				var lat = parseInt($('#latdeg').val()) + parseInt($('#latmin').val())/60;
-				var lon = parseInt($('#londeg').val()) + parseInt($('#lonmin').val())/60;
-				$('#lat').val(lat);
-				$('#lon').val(lon);
+			var formSel = '#' + formName;
+			if($(formSel + ' #latdeg').length > 0){ //copy the lat&lon to decimal format field
+				var lat = parseInt($(formSel + ' #latdeg').val()) + parseInt($(formSel + ' #latmin').val())/60;
+				var lon = parseInt($(formSel + ' #londeg').val()) + parseInt($(formSel + ' #lonmin').val())/60;
+				$(formSel + ' #lat').val(lat);
+				$(formSel + ' #lon').val(lon);
 			}
-			$('#'+formName).find('input[time]').each(function(){ //make the time into a HH:MM string and put it in the hidden field
+			$(formSel).find('input[time]').each(function(){ //make the time into a HH:MM string and put it in the hidden field
 				var $for = $('#'+$(this).attr('for'));
 				var t = ($(this).val().length > 1) ? $(this).val() : ($(this).val().length == 1) ? "0"+$(this).val() : "00";
 				($(this).attr('time') == "hr") ? $for.val(t + ":") : $for.val($for.val() + t);
 			});
-			$('#review').fadeOut(110, function(){ //put in the new buttons
+			$(formSel +' #review').fadeOut(110, function(){ //put in the new buttons
 				$("<formline />").insertBefore($('#back')).append(
 					$("<button id='revise'>Revise</button>").hide().fadeIn(110).insertBefore($('#back')).click(function(){ //revise handler
-						$('#revise, #submit').each(function(){$(this).fadeOut(110, function(){$(this).remove();$('#review').fadeIn(110)})});
+						$('#revise,  #submit').each(function(){$(this).fadeOut(110, function(){$(this).remove();$(formSel +' #review').fadeIn(110)})});
 						var $labels = $('label');
 						$labels.each(function(i){
 							var $label = $(this);
@@ -98,8 +140,8 @@ var setupValidationHandlers = function(formName){
 					})
 				);
 				$("<button id='submit'>Submit</button>").hide().fadeIn(110).insertAfter($('#revise')).click(function(){ //final submit handler
-					var formURL = $('#'+formName).attr('action');
-					var formData = new FormData($('#'+formName)[0]); 
+					var formURL = $(formSel).attr('action');
+					var formData = new FormData($(formSel)[0]); 
 					$.ajax({                                                    
 						url: formURL,
 						data: formData,
@@ -213,6 +255,13 @@ $(document).keydown(function(e){
 });
 
 $(document).ready(function(){ //init
-	updateContent('pages/front.html');
+	var hash = window.location.hash.split('/');
+	if(hash.length == 1){
+		updateContent('pages/front.html');
+	}
+	else{
+		var event = new CustomEvent(hash[1], {"detail": hash});
+		document.dispatchEvent(event);
+	}
 });
 })(jQuery);
