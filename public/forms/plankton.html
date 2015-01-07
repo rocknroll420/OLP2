@@ -1,43 +1,28 @@
-<h2>Plankton Tow</h2>
-<h3 id="section-title"></h3>
 <div id="plankton">
-	<form id="plankton-0" name="plankton-0" action="form/?form=plankton-0" method="post" enctype="multipart/form-data" target="iframe">
-		<h3>Plankton 0</h3>
-		<formline>
-			<label for="poo0">Poo0</label><input id="poo0" type="text" required />
-		</formline>
-		<formline>
-			<button id='review'>Review Data</button>
-		</formline>
-	</form>
-	<form id="plankton-1" name="plankton-1" action="form/?form=plankton-1" method="post" enctype="multipart/form-data" target="iframe">
-		<h3>Plankton 1</h3>
-		<formline>
-			<label for="poo1">Poo1</label><input id="poo1" type="text" required />
-		</formline>
-		<formline>
-			<button id='review'>Review Data</button>
-		</formline>
-	</form>
-	<form id="plankton-2">
-		<h3>Plankton 2</h3>
-		2
-	</form>
-	<span id="shit">shit</span>
 </div>
+<shit id="shit">shit</shit>
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
-		$('form').hide();
 		document.getElementById('plankton').addEventListener('multi-change', function(e){
 			$('#shit').attr('state', e.detail.state); //i also leave after;
-			$('#plankton-'+((e.detail.state + 2) % 3)).fadeOut(110, function(){$('#plankton-'+e.detail.state).fadeIn(110);});
+			//$('#plankton-'+((e.detail.state + 2) % 3)).fadeOut(89, function(){$('#plankton-'+e.detail.state).fadeIn(89);});
+			$.get('/forms/multi/plankton-'+e.detail.state+'.html', function(data){
+				$('#plankton').fadeOut(89, function(){
+					$(this).html(data);
+					var id = "plankton-" + e.detail.state;
+					var event = new CustomEvent("multi-state-ready", {"detail": {"name": "plankton", "state": e.detail.state, "id": id}});
+					document.dispatchEvent(event);
+					$(this).fadeIn(89);
+				});
+			});
 		});
 		
 		$('#shit').click(function(){ //take me out later plz
 			var hash = window.location.hash.split("/");
 			var state = parseInt($(this).attr('state'));
 			state = ++state % 3;
+			$('#revise, #submit').remove();
 			var event = new CustomEvent("multi-change", {"detail": {"state": state, "name": hash[4], "program": hash[2]}});
 			document.dispatchEvent(event);
 		});

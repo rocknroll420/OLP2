@@ -28,7 +28,7 @@ document.addEventListener('form', function(e){
 var updateContent = function(newContent, cb){
 	if(typeof cb == "undefined") cb = function(){return;};
 	$.get(newContent, function(data){
-		$('#content').fadeOut(110, function(){$(this).html(data).fadeIn(110);cb();});
+		$('#content').fadeOut(89, function(){$(this).html(data).fadeIn(89);cb();});
 	});
 };
 
@@ -70,11 +70,6 @@ document.addEventListener('form-ready', function(e){
 		}
 		var event = new CustomEvent('multi-change', {"detail": {"state": multiForms[e.detail.name][hash[2]], "name": hash[4], "program": hash[2]}});
 		document.getElementById(e.detail.name).dispatchEvent(event);
-		$forms = $('form');
-		$forms.each(function(){
-			setupValidationHandlers($(this).attr('id'));
-			setupBadInputPrevention($(this).attr('id'));
-		});
 	}
 	else{
 		setupValidationHandlers(e.detail.name);
@@ -85,30 +80,35 @@ document.addEventListener('form-ready', function(e){
 document.addEventListener('multi-change', function(e){ //multiforms emit this type of event when they are done a certain task
 	console.log(e.detail);
 	multiForms[e.detail.name][e.detail.program] = e.detail.state; //update state globals to save position
-	updateDateTime(); 
 	var event = new CustomEvent('multi-change', {"detail": e.detail});  //let the form know state is saved
 	document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
+});
+
+document.addEventListener('multi-state-ready', function(e){ //multiforms emit this type of event after they load a new state
+	updateDateTime();
+	setupValidationHandlers(e.detail.id);
+	setupBadInputPrevention(e.detail.id);
 });
 
 var setupValidationHandlers = function(formName){
 	$('#'+formName).validate({
 		submitHandler: function(form){
 			var formSel = '#' + formName;
-			if($(formSel + ' #latdeg').length > 0){ //copy the lat&lon to decimal format field
-				var lat = parseInt($(formSel + ' #latdeg').val()) + parseInt($(formSel + ' #latmin').val())/60;
-				var lon = parseInt($(formSel + ' #londeg').val()) + parseInt($(formSel + ' #lonmin').val())/60;
-				$(formSel + ' #lat').val(lat);
-				$(formSel + ' #lon').val(lon);
+			if($('#latdeg').length > 0){ //copy the lat&lon to decimal format field
+				var lat = parseInt($('#latdeg').val()) + parseInt($('#latmin').val())/60;
+				var lon = parseInt($('#londeg').val()) + parseInt($('#lonmin').val())/60;
+				$('#lat').val(lat);
+				$('#lon').val(lon);
 			}
 			$(formSel).find('input[time]').each(function(){ //make the time into a HH:MM string and put it in the hidden field
 				var $for = $('#'+$(this).attr('for'));
 				var t = ($(this).val().length > 1) ? $(this).val() : ($(this).val().length == 1) ? "0"+$(this).val() : "00";
 				($(this).attr('time') == "hr") ? $for.val(t + ":") : $for.val($for.val() + t);
 			});
-			$(formSel +' #review').fadeOut(110, function(){ //put in the new buttons
+			$('#review').fadeOut(89, function(){ //put in the new buttons
 				$("<formline />").insertBefore($('#back')).append(
-					$("<button id='revise'>Revise</button>").hide().fadeIn(110).insertBefore($('#back')).click(function(){ //revise handler
-						$('#revise,  #submit').each(function(){$(this).fadeOut(110, function(){$(this).remove();$(formSel +' #review').fadeIn(110)})});
+					$("<button id='revise'>Revise</button>").hide().fadeIn(89).insertBefore($('#back')).click(function(){ //revise handler
+						$('#revise,  #submit').each(function(){$(this).fadeOut(89, function(){$(this).remove();$(formSel +' #review').fadeIn(89)})});
 						var $labels = $('label');
 						$labels.each(function(i){
 							var $label = $(this);
@@ -123,23 +123,23 @@ var setupValidationHandlers = function(formName){
 								}
 							}
 							else{
-								$(this).find('span').fadeOut(110, function(){
+								$(this).find('span').fadeOut(89, function(){
 									$(this).remove();
 									if($label.attr('type') == "count"){
 										var i = $label.attr('for').split("-")[1];
 										if($('#ais-'+i+'-yes').prop('checked')){
-											$('#ais-'+i+'-cnt').fadeIn(110);
+											$('#ais-'+i+'-cnt').fadeIn(89);
 										}
 									}
 									else{
-										$('#'+$label.attr('for')).fadeIn(110);
+										$('#'+$label.attr('for')).fadeIn(89);
 									}
 								});
 							}
 						});
 					})
 				);
-				$("<button id='submit'>Submit</button>").hide().fadeIn(110).insertAfter($('#revise')).click(function(){ //final submit handler
+				$("<button id='submit'>Submit</button>").hide().fadeIn(89).insertAfter($('#revise')).click(function(){ //final submit handler
 					var formURL = $(formSel).attr('action');
 					var formData = new FormData($(formSel)[0]); 
 					$.ajax({                                                    
@@ -153,8 +153,8 @@ var setupValidationHandlers = function(formName){
 							var data = JSON.parse(data);
 							if(data.success){
 								console.log(data.success);
-								$('#content').fadeOut(110, function(){
-									$(this).html("Data submitted successfully").fadeIn(110).delay(800).fadeOut(110, function(){
+								$('#content').fadeOut(89, function(){
+									$(this).html("Data submitted successfully").fadeIn(89).delay(800).fadeOut(89, function(){
 										var hash = window.location.hash.split("/");
 										window.location.hash = hash[0] + "/" + hash[1] + "/" + hash[2];
 									});
@@ -184,10 +184,16 @@ var setupValidationHandlers = function(formName){
 						$(this).addClass('faded');
 					}
 				}
+				else if($(this).attr('type') == "textarea"){
+					var val = $(this).attr('for');
+					$('#'+val).fadeOut(89, function(){
+						$("<span class='textarea-span'/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
+					});
+				}
 				else{
 					var val = $(this).attr('for');
-					$('#'+val).fadeOut(110, function(){
-						$("<span/>").text($(this).val()).hide().fadeIn(110).appendTo(label);
+					$('#'+val).fadeOut(89, function(){
+						$("<span/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
 					});
 				}
 			});
@@ -243,6 +249,7 @@ var updateDateTime = function(){ //date formatting
 	day += " " + months[now.getMonth()];
 	day += " " + now.getFullYear();
 	var time = now.toLocaleTimeString();
+	if($('date').length < 1) console.log("no date");
 	$('date').html("Date: " + day);
 	$('time').html("Time: " + time);
 };

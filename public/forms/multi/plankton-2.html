@@ -1,0 +1,54 @@
+<h2>Plankton Tow</h2>
+<h3 id="section-title"></h3>
+<form id="plankton-2" name="plankton-2" action="form/?form=plankton-obs" method="post" enctype="multipart/form-data" target="iframe">
+	<h3>Plankton Tow Survey - Observations</h3>
+	Date: <date></date>
+	<br><br>
+	
+	<formline>
+		<label for="towID">Plankton Tow ID Number: </label><input id="towID" type="number" name="towID" required />
+		<p>if the Plankton Tow ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
+	</formline>
+	
+	<formline>
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required />
+	</formline>
+	
+	<formline>
+		<label for="mesh_size">Net Mesh Size (micrometres): </label>
+		<select id="mesh_size" name="mesh_size" value="" required>
+			<option value="60">60</option>
+			<option value="333">333</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
+	
+	<formline>
+		<label for="survey_depth">Average Depth of Survey (m): </label><input id="survey_depth" name="survey_depth" type="number" min="0" special="pos" required/>
+	</formline>
+	<!---
+	<?php //include '../other/getPlanktonNamesSql.php'; ?>
+	
+	<u>Plankton Species Observed:</u><br>
+	check all species that you observed<br><br>
+	<?php
+	//$i = 0;
+	//while ($row = $rs->fetchRow()){
+	?>
+	<input type="checkbox" name="plankton[<?php //echo $row[3]; ?>]" value="<?php //echo $row[1]; ?>"> 
+	<?php
+	//echo $row[1] . " - " . $row[3] . "<br>";
+	//echo $row[1] . "<br>";
+	//$i++;
+	//} ?> 
+	<br>
+	--->
+	<formline>
+		<label for="comment" type="textarea">Add Comments if required (optional):<br></label>
+		<textarea id="comment" name="comment" rows="3" cols="37" ></textarea>
+	</formline>
+	
+	<formline>
+		<button id="review">Review Data</button>
+	</formline>
+</form>

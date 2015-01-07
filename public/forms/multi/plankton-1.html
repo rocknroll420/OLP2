@@ -1,0 +1,38 @@
+<h2>Plankton Tow</h2>
+<h3 id="section-title"></h3>
+<form id="plankton-1" name="plankton-1" action="form/?form=plankton-end" method="post" enctype="multipart/form-data" target="iframe">
+	<h3>Plankton Tow Survey - End Point</h3>
+	Date: <date></date>
+	<br><br>
+	
+	<formline>
+		<label for="tripID">Trip ID Number: </label><input id="tripID" type="number" name="tripID" required />
+		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
+		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
+	</formline>
+
+	<formline>	
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required />
+	</formline>
+	
+	<formline>
+		<label for="time_h">End Time (HH:MM) </label><input id="time_h" name="time_h" type="number" min="0" max="23" special="pos int" required /><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" min="0" max="59" special="pos int" required /><timezone></timezone> 24 hour format
+	</formline>
+	
+	Position of Tow End Point:<br>
+	<formline>
+		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" special="pos int" min="46" max="52" required /> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/> (m.mmm)
+	</formline>
+	<formline>
+		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" special="pos int" min="51" max="60" required /> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/> (m.mmm)<br><br>
+	</formline>
+	
+	<formline>
+		<label for="water_depth">Water Depth (to sea bottom) if observed: </label>
+		<input id="water_depth" name="water_depth" type="number" min="0" special="pos" required /> (m)
+	</formline>
+
+	<formline>
+		<button id='review'>Review Data</button>
+	</formline>
+</form>
