@@ -37,3 +37,7 @@ button{
 .underline{
 	text-decoration:underline;
 }
+
+.checkboxline{
+	margin:3px 0;
+}

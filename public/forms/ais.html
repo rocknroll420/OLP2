@@ -1,14 +1,14 @@
 <h2>Aquatic Invasive Species (AIS) Survey</h2>
 
 <!---<form method="POST" name="aisSurvey" action="aisCheck.php?ROV=<?php echo $rov; ?>">--->
-<form id="ais" name="ais" action="form/?form=ais" method="post" enctype="multipart/form-data" target="iframe">
+<form id="ais" name="ais" action="SETBYJS" method="post" enctype="multipart/form-data" target="iframe">
 	<h3 id="section-title"></h3>
 	<u><b><span id="survey-type" class="red underline">------------------</span></b></u> - If you chose the wrong type of Survey press "Cancel" at the bottom.<br><br>
 	Date: <date></date>
 	<br><br>
 
 	<formline>
-		Trip ID Number: <input type="number" id="tripID" name="tripID" required>
+		<label for="tripID">Trip ID Number: </label><input type="number" id="tripID" name="tripID" required>
 		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
 		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
@@ -18,7 +18,7 @@
 	</formline>
 	
 	<formline>
-		<label for="time_h">Observation Time (HH:MM) </label><input id="time_h" name="time_h" type="number" size="3" max="23" min="0" required><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" size="3" max="59" min="0"> <timezone></timezone> 24 hour format
+		<label for="time_h">Observation Time (HH:MM) </label><input id="time_h" name="time_h" for="time_full" type="number" size="3" max="23" min="0" required><label for="time_m"> : </label><input id="time_m" name="time_m" for="time_full" type="number" size="3" max="59" min="0"> <timezone></timezone> 24 hour format
 		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
 	
@@ -36,57 +36,95 @@
 	<u>Aquatic Invasive Species Observed:</u><br><br>
 	<ul id="ais-list">
 	</ul>
+	
+	<input id="rov" name="rov" type="hidden" />
 
 	<button id="review">Review</button>
 </form>
 <a id="back" href="#!/program/AIS">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
-		$.get('select/?s=get_ais_names', function(data){
-			data = JSON.parse(data);
-			for(var x in data.success){
-				$('#ais-list').append($("<formline/>")
-					.append($('<span/>').html(data.success[x].name + "<i>("+data.success[x].sci_name+")</i>"))
-					.append($('<input type="radio" value="n-a" />').prop('checked', true).attr('id', 'ais-'+x+'-na').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-na" type="radio"/>').text("Did Not Check"))
-					.append($('<input type="radio" value="no"/>').attr('id', 'ais-'+x+'-no').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-no" type="radio"/>').text("No"))
-					.append($('<input type="radio" value="yes"/>').attr('id', 'ais-'+x+'-yes').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-yes" type="radio"/>').text("Yes"))
-					.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT: ").hide()).append($('<input type="number" special="pos int" max="999" min="0" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
-				);
-				$('input[type="radio"][name="ais-'+x+'-obs"]').change(function(){
-					var i = $(this).attr('id').split("-")[1];
-					if($(this).val() == "yes"){
-						$('#ais-'+i+'-cnt').fadeIn(89);
-						$('label[for="ais-'+i+'-cnt"]').fadeIn(89);
+		var hash = window.location.hash.split('/');
+		var getNames = function(retry){
+			$.get('select/?s=get_ais_names', function(data){
+				data = JSON.parse(data);
+				if(data.error){
+					if(retry < 5){
+						console.log("select request failed... requesting again");
+						getNames(++retry);
+						return;
 					}
-					else{
-						$('#ais-'+i+'-cnt').fadeOut(89);
-						$('label[for="ais-'+i+'-cnt"]').fadeOut(89);
-					}
-				});
-			}
-			var hash = window.location.hash.split('/');
-			if(typeof hash[2] == "string"){
-				switch(hash[2]){
-					case "AIS":
-						$('#module').val(1);
-						$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
-						break;
-					case "ecosys":
-						$('#module').val(2);
-						$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
-						break;
-					case "wolffish":
-						$('#module').val(3);
-						$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
-						break;
+					console.log("ais_names requests reached maximum retries");
+					return;
 				}
-			}
-			if(typeof hash[5] == "string"){
-				var surveyType = (hash[5] == "ROV") ? "ROV Survey" : "Shoreline Survey";
-				$('#survey-type').hide().html(surveyType).fadeIn(10);
-			}
-			var event = new CustomEvent("form-ready", {"detail": {"name": "ais"}});
-			document.dispatchEvent(event);
-		});
+				else if(!data.success){
+					if(retry < 5){
+						console.log("no response from server... requesting again");
+						getNames(++retry);
+						return;
+					}
+					console.log("server busy try again later");
+					return;
+				}
+				else{
+					for(var x in data.success){
+						$('#ais-list').append($("<formline/>")
+							.append($('<input type="hidden" id="ais-'+x+'-code" name="ais-'+x+'-code" value="'+data.success[x].ais_code+'"/>'))
+							.append($('<span/>').html(data.success[x].name + "<i>("+data.success[x].sci_name+")</i>"))
+							.append($('<input type="radio" value="n-a" />').prop('checked', true).attr('id', 'ais-'+x+'-na').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-na" type="radio"/>').text("Did Not Check"))
+							.append($('<input type="radio" value="no"/>').attr('id', 'ais-'+x+'-no').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-no" type="radio"/>').text("No"))
+							.append($('<input type="radio" value="yes"/>').attr('id', 'ais-'+x+'-yes').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-yes" type="radio"/>').text("Yes"))
+							.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT: ").hide()).append($('<input type="number" special="pos int" max="999" value="-99" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
+						);
+						$('input[type="radio"][name="ais-'+x+'-obs"]').change(function(){
+							var i = $(this).attr('id').split("-")[1];
+							if($(this).val() == "yes"){
+								$('#ais-'+i+'-cnt').val("").fadeIn(89);
+								$('label[for="ais-'+i+'-cnt"]').fadeIn(89);
+							}
+							else{
+								var $this = $(this);
+								$('#ais-'+i+'-cnt').fadeOut(89);
+								$('label[for="ais-'+i+'-cnt"]').fadeOut(89, function(){
+									if($this.val() == "no"){
+										$('#ais-'+i+'-cnt').val(0);
+									}
+									else if($this.val() == "n-a"){
+										$('#ais-'+i+'-cnt').val(-99);
+									}
+								});
+							}
+						});
+					}
+					$('#ais-list').append($('<input id="ais-repeats" name="ais-repeats" type="hidden" value="'+x+'" />'));
+				}
+				if(typeof hash[2] == "string"){
+					switch(hash[2]){
+						case "AIS":
+							$('#module').val(1);
+							$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+							break;
+						case "ecosys":
+							$('#module').val(2);
+							$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+							break;
+						case "wolffish":
+							$('#module').val(3);
+							$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+							break;
+					}
+				}
+				if(typeof hash[5] == "string"){
+					//var surveyType = (hash[5] == "ROV") ? "ROV Survey" : "Shoreline Survey";
+					var formStuff = (hash[5] == "ROV") ? {surveyType: "ROV Survey", formUrl: "form/?form=rov", rovVal: 1} : {surveyType: "Shoreline Survey", formUrl:"form/?form=shoreline", rovVal: 0};
+					$('#rov').val(formStuff.rovVal);
+					$('#survey-type').hide().html(formStuff.surveyType).fadeIn(10);
+					$('form').attr('action', formStuff.formUrl);
+				}
+				var event = new CustomEvent("form-ready", {"detail": {"name": "ais"}});
+				document.dispatchEvent(event);
+			});
+		};
+		getNames(0);
 	});
 </script>

@@ -78,13 +78,12 @@ document.addEventListener('form-ready', function(e){
 });
 
 document.addEventListener('multi-change', function(e){ //multiforms emit this type of event when they are done a certain task
-	console.log(e.detail);
 	multiForms[e.detail.name][e.detail.program] = e.detail.state; //update state globals to save position
-	var event = new CustomEvent('multi-change', {"detail": e.detail});  //let the form know state is saved
+	var event = new CustomEvent('multi-change', {"detail": e.detail}); 
 	document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
 });
 
-document.addEventListener('multi-state-ready', function(e){ //multiforms emit this type of event after they load a new state
+document.addEventListener('multi-state-ready', function(e){ //multiforms emit this type of event after they finish loading a new state
 	updateDateTime();
 	setupValidationHandlers(e.detail.id);
 	setupBadInputPrevention(e.detail.id);
@@ -112,13 +111,14 @@ var setupValidationHandlers = function(formName){
 						var $labels = $('label');
 						$labels.each(function(i){
 							var $label = $(this);
-							if($(this).attr('type') == "radio"){
-								var radio = $(this).attr('for');
-								if($('#'+radio).prop('checked')){
-									$('#'+radio).unbind('click');
+							if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
+								var $radio = $(this).attr('for');
+								$radio = $('#'+$radio);
+								if($radio.prop('checked')){
+									$radio.unbind('click');
 								}
 								else{
-									$('#'+radio).removeClass('faded').prop('disabled', false);
+									$radio.removeClass('faded').prop('disabled', false);
 									$(this).removeClass('faded');
 								}
 							}
@@ -174,7 +174,7 @@ var setupValidationHandlers = function(formName){
 				});
 			});
 			$('form label').each(function(i, label){ //show the user what they submitted
-				if($(this).attr('type') == "radio"){
+				if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
 					var radio = $(this).attr('for');
 					if($('#'+radio).prop('checked')){
 						$('#'+radio).click(function(e){e.preventDefault();});

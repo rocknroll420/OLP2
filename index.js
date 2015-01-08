@@ -55,38 +55,64 @@ app.post('/form', function(req, res){
 						});
 					}
 					else if(currentTask.type == "insert"){
-						for(var j in currentTask.pairings){
-							if(j == "date"){
-								var now = new Date();
-								var dateString = now.getFullYear() + "-";
-								dateString += now.getMonth()+1 + "-";
-								dateString += now.getDate();
-								post[j] = dateString;
-							}
-							else if(j == "obs_num"){
-								post[j] = selects["get_obs_num"];
-								if(post[j] < 0){ //if we don't have the obs_num we try to get it again
-									connection.query(form_sql.sql["get_obs_num"].query, function(err, rows, fields){
-										post[j] = form_sql.sql["get_obs_num"].handler(err, rows, fields);
-										selects["get_obs_num"] = posts[j];
-									});
+						var doInsert = function(k){
+							for(var j in currentTask.pairings){
+								if(j == "date"){
+									var now = new Date();
+									var dateString = now.getFullYear() + "-";
+									dateString += now.getMonth()+1 + "-";
+									dateString += now.getDate();
+									post[j] = dateString;
+								}
+								else if(j == "obs_num"){
+									post[j] = selects["get_obs_num"];
+									if(post[j] < 0){ //if we don't have the obs_num we try to get it again
+										connection.query(form_sql.sql["get_obs_num"].query, function(err, rows, fields){
+											post[j] = form_sql.sql["get_obs_num"].handler(err, rows, fields);
+											selects["get_obs_num"] = posts[j];
+										});
+									}
+								}
+								else{
+									if(currentTask.repeat){
+										var pairing = (typeof currentTask.pairings[j] == "string") ? currentTask.pairings[j].split('-') : [];
+										if(pairing.length > 1){
+											pairing[1] = k;
+											pairing = pairing[0] + "-" + pairing[1] + "-" + pairing[2];
+											post[j] = fields[pairing];
+										}
+										else{ //this one is taken from the same field each time
+											post[j] = fields[currentTask.pairings[j]];
+										}
+									}
+									else{
+										post[j] = fields[currentTask.pairings[j]];
+									}
 								}
 							}
-							else{
-								post[j] = fields[currentTask.pairings[j]];
-							}
-						}
-						connection.query('INSERT INTO ' + currentTask.table + ' SET ?', post, function(err, result){
-							if(err){
-								console.log("bad query " + util.inspect(post));
-								msg.error += "Post failed ";
-							}
-							else{
-								console.log(currentTask.table + " updated successfully");
-								msg.success += "Database updated ";
-							}
-							doRecursion();
-						});
+							connection.query('INSERT INTO ' + currentTask.table + ' SET ?', post, function(err, result){
+								if(err){
+									console.log("bad query " + util.inspect(post));
+									msg.error += "Post failed ";
+								}
+								else{
+									console.log(currentTask.table + " updated successfully");
+									msg.success += "Database updated ";
+								}
+								if(currentTask.repeat){
+									if(k < parseInt(fields[currentTask.repeat])){
+										doInsert(++k);
+									}
+									else{
+										doRecursion();
+									}
+								}
+								else{
+									doRecursion();
+								}
+							});
+						};
+						doInsert(0);
 					}
 				}
 				doTasks(0);

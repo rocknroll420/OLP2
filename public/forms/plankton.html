@@ -6,7 +6,6 @@
 	$(document).ready(function(){
 		document.getElementById('plankton').addEventListener('multi-change', function(e){
 			$('#shit').attr('state', e.detail.state); //i also leave after;
-			//$('#plankton-'+((e.detail.state + 2) % 3)).fadeOut(89, function(){$('#plankton-'+e.detail.state).fadeIn(89);});
 			$.get('/forms/multi/plankton-'+e.detail.state+'.html', function(data){
 				$('#plankton').fadeOut(89, function(){
 					$(this).html(data);

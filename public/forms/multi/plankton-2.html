@@ -1,4 +1,4 @@
-<h2>Plankton Tow</h2>
+<h2>Plankton Tow 2</h2>
 <h3 id="section-title"></h3>
 <form id="plankton-2" name="plankton-2" action="form/?form=plankton-obs" method="post" enctype="multipart/form-data" target="iframe">
 	<h3>Plankton Tow Survey - Observations</h3>
@@ -26,23 +26,14 @@
 	<formline>
 		<label for="survey_depth">Average Depth of Survey (m): </label><input id="survey_depth" name="survey_depth" type="number" min="0" special="pos" required/>
 	</formline>
-	<!---
-	<?php //include '../other/getPlanktonNamesSql.php'; ?>
+
 	
 	<u>Plankton Species Observed:</u><br>
-	check all species that you observed<br><br>
-	<?php
-	//$i = 0;
-	//while ($row = $rs->fetchRow()){
-	?>
-	<input type="checkbox" name="plankton[<?php //echo $row[3]; ?>]" value="<?php //echo $row[1]; ?>"> 
-	<?php
-	//echo $row[1] . " - " . $row[3] . "<br>";
-	//echo $row[1] . "<br>";
-	//$i++;
-	//} ?> 
-	<br>
-	--->
+	check all species that you observed
+	<div id="plankton_names">
+	</div>
+
+
 	<formline>
 		<label for="comment" type="textarea">Add Comments if required (optional):<br></label>
 		<textarea id="comment" name="comment" rows="3" cols="37" ></textarea>
@@ -52,3 +43,40 @@
 		<button id="review">Review Data</button>
 	</formline>
 </form>
+<script>
+	$(document).ready(function(){
+		//var hash = window.location.hash.split('/');
+		var getNames = function(retry){
+			$.get('select/?s=get_plankton_names', function(data){
+				data = JSON.parse(data);
+				if(data.error){
+					if(retry < 5){
+						console.log("select request failed... requesting again");
+						getNames(++retry);
+						return;
+					}
+					console.log("plankton_names requests reached maximum retries");
+					return;
+				}
+				else if(!data.success){
+					if(retry < 5){
+						console.log("no response from server... requesting again");
+						getNames(++retry);
+						return;
+					}
+					console.log("server busy try again later");
+					return;
+				}
+				else{
+					for(var x in data.success){
+						$('#plankton_names').append($('<formline class="checkboxline" />').html("<input id='"+data.success[x].code+"' name='"+data.success[x].code+"' value='"+data.success[x].name+"' type='checkbox'/><label for='"+data.success[x].code+"' type='checkbox'>"+data.success[x].name+"</label>"));
+					}
+				}
+				
+				console.log(data);
+				
+			});
+		};
+		getNames(0);
+	});
+</script>
