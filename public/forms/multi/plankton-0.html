@@ -1,6 +1,6 @@
 <h2>Plankton Tow 0</h2>
 <h3 id="section-title"></h3>
-<form id="plankton-0" name="plankton-0" action="form/?form=plankton-start" method="post" enctype="multipart/form-data" target="iframe">
+<form id="plankton-0" name="plankton-0" action="form/?form=planktonStart" method="post" enctype="multipart/form-data" target="iframe">
 	<h3>Plankton Tow Survey - Start Point</h3>
 	Date: <date></date>
 	<br><br>
@@ -17,19 +17,22 @@
 	
 	<formline>
 		<label for="time_h">Start Time (HH:MM) </label><input id="time_h" name="time_h" type="number" min="0" max="23" special="pos int" required /><label for="time_m"> : </label><input id="time_m" name="time_m" type="number" min="0" max="59" special="pos int" required /><timezone></timezone> 24 hour format
+		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
 	
 	Position of Tow Start Point:<br>
 	<formline>
 		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" special="pos int" min="46" max="52" required /> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/> (m.mmm)
+		<input id="lat" name="lat" type="hidden" />
 	</formline>
 	<formline>
 		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" special="pos int" min="51" max="60" required /> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/> (m.mmm)<br><br>
+		<input id="lon" name="lon" type="hidden" />	
 	</formline>
 	
 	<formline>
 		<label for="water_depth">Water Depth (to sea bottom) if observed: </label>
-		<input id="water_depth" name="water_depth" type="number" min="0" special="pos" required /> (m)
+		<input id="water_depth" name="water_depth" type="number" min="0" special="pos" /> (m)
 	</formline>
 	
 	<formline>
