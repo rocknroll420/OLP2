@@ -199,15 +199,28 @@ app.post('/form', function(req, res){
 									dateString += now.getDate();
 									val = dateString;
 								}
-								else if(j == "obs_num" || currentTask.pairings[j] == "obs_num"){
+								else if(j == "obs_num" || currentTask.pairings[j] == "obs_num"){ 
 									val = selects["get_obs_num"];
 									if(val < 0){ //if we don't have the obs_num we try to get it again
 										connection.query(form_sql.sql["get_obs_num"].query, function(err, rows, fields){
-											val = form_sql.sql["get_obs_num"].handler(err, rows, fields);
-											selects["get_obs_num"] = val;
+											form_sql.sql["get_obs_num"].handler(err, rows, fields, function(res){
+												val = res;
+												selects["get_obs_num"] = val;
+											});
 										});
 									}
 								}
+								//else if(j == "tow_id" || currentTask.pairings[j] == "tow_id"){ //if there ends up being more of these type of things there should be some sort of "get" function with retry built in
+								//	val = selects["get_tow_id"];
+								//	if(val < 0){ //if we don't have tow_id try again
+								//	connection.query(form_sql.sql["get_tow_id"].query, function(err, rows, fields){
+								//		form_sql.sql["get_tow_id"].handler(err, rows, fields, function(res){
+								//			val = res;
+								//			selects["get_tow_id"] = val;
+								//		});
+								//	});
+								//	}	
+								//} //this is different now for a moment so comment
 								else{
 									val = fields[currentTask.pairings[j]];
 								}
@@ -233,7 +246,7 @@ app.post('/form', function(req, res){
 										msg.error += "Post failed ";
 									}
 									else{
-										console.log(currentTask.table + " updated successfully");
+										console.log(currentTask.table + " inserted successfully");
 										msg.success += "Database updated ";
 									}
 									if(currentTask.repeat){//we might have to repeat a task
@@ -249,15 +262,21 @@ app.post('/form', function(req, res){
 									}
 								});
 								break;
-							case "update": //UNTESTED
-								console.log("update request");
+							case "update":
 								post = buildPost(currentTask);
-								var query = "UPDATE " + currentTask.table + " SET ?? = ?? WHERE " + currentTask.where.where + " = ?";
-								connection.query(query, [post.cols, post.vals, fields[currentTask.where.is]], function(err, result){
-									if(err) console.log("error updating " + currentTask.table);
+								//var query = "UPDATE " + currentTask.table + " SET ?? = ?? WHERE " + currentTask.where.where + " = ?";
+								var query = "UPDATE " + currentTask.table + " SET "; //was having trouble getting the ?? syntax to escape properly so i did it myself
+								for(var i in post.cols){
+									if(i > 0) query += ", ";
+									query += post.cols[i] + " = " + connection.escape(post.vals[i]);
+								}
+								query += " WHERE " + currentTask.where.where + " = " + connection.escape(fields[currentTask.where.is]);
+								//connection.query(query , [post.cols, post.vals, fields[currentTask.where.is]], function(err, result){ 
+								connection.query(query, function(err, result){
+									if(err){ console.log("error updating " + currentTask.table);console.log(err);}
+									else{console.log(currentTask.table + " updated successfully")}
 									(++x < theForm.tasks.length) ? doTask(x) : endTasks();
 								});
-								
 								break;
 							case "select":
 								connection.query(currentTask.query, function(err, rows, fields){

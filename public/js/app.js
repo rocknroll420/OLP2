@@ -25,6 +25,10 @@ document.addEventListener('form', function(e){
 	makeForm(e.detail[4]);
 });
 
+document.addEventListener('test', function(e){ //loads the test page. remove later
+	makeForm("test");
+});
+
 var updateContent = function(newContent, cb){
 	if(typeof cb == "undefined") cb = function(){return;};
 	$.get(newContent, function(data){
@@ -62,13 +66,13 @@ document.addEventListener('form-ready', function(e){
 	if(e.detail.isMulti){
 		if(typeof multiForms[e.detail.name] == "undefined"){
 			var progress = {};
-			progress[hash[2]] = 0;
+			progress[hash[2]] = {state: 0, data: {}};
 			multiForms[e.detail.name] = progress;
 		}
 		else if(typeof multiForms[e.detail.name][hash[2]] == "undefined"){
-			multiForms[e.detail.name][hash[2]] = 0;
+			multiForms[e.detail.name][hash[2]] = {state: 0, data: {}};
 		}
-		var event = new CustomEvent('multi-change', {"detail": {"state": multiForms[e.detail.name][hash[2]], "name": hash[4], "program": hash[2]}});
+		var event = new CustomEvent('multi-change', {"detail": {"info": multiForms[e.detail.name][hash[2]], "name": hash[4], "program": hash[2]}});
 		document.getElementById(e.detail.name).dispatchEvent(event);
 	}
 	else{
@@ -78,7 +82,8 @@ document.addEventListener('form-ready', function(e){
 });
 
 document.addEventListener('multi-change', function(e){ //multiforms emit this type of event when they are done a certain task
-	multiForms[e.detail.name][e.detail.program] = e.detail.state; //update state globals to save position
+	multiForms[e.detail.name][e.detail.program]["state"] = e.detail.info.state; //update state globals to save position
+	if(e.detail.info.data) multiForms[e.detail.name][e.detail.program]["data"] = e.detail.info.data;
 	var event = new CustomEvent('multi-change', {"detail": e.detail}); 
 	document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
 });

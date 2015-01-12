@@ -11,6 +11,11 @@ iframe{
 
 #top-bar{
 	background:blue;
+	padding:3px;
+}
+
+#top-bar a:hover{
+	background:white;
 }
 
 formline{

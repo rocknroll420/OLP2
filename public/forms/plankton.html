@@ -4,13 +4,13 @@
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
-		document.getElementById('plankton').addEventListener('multi-change', function(e){
-			$('#shit').attr('state', e.detail.state); //i also leave after;
-			$.get('/forms/multi/plankton-'+e.detail.state+'.html', function(data){
+		document.getElementById('plankton').addEventListener('multi-change', function(e){ //this should be where we populate a field with tow_id (although sockets make more sense all the time)
+			$('#shit').attr('state', e.detail.info.state); //i also leave after;
+			$.get('/forms/multi/plankton-'+e.detail.info.state+'.html', function(data){ 
 				$('#plankton').fadeOut(89, function(){
 					$(this).html(data);
-					var id = "plankton-" + e.detail.state;
-					var event = new CustomEvent("multi-state-ready", {"detail": {"name": "plankton", "state": e.detail.state, "id": id}});
+					var id = "plankton-" + e.detail.info.state;
+					var event = new CustomEvent("multi-state-ready", {"detail": {"name": "plankton", "state": e.detail.info.state, "id": id}});
 					document.dispatchEvent(event);
 					$(this).fadeIn(89);
 				});
@@ -22,7 +22,7 @@
 			var state = parseInt($(this).attr('state'));
 			state = ++state % 3;
 			$('#revise, #submit').remove();
-			var event = new CustomEvent("multi-change", {"detail": {"state": state, "name": hash[4], "program": hash[2]}});
+			var event = new CustomEvent("multi-change", {"detail": {info:{"state": state}, "name": hash[4], "program": hash[2]}});
 			document.dispatchEvent(event);
 		});
 		
