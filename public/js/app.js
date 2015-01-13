@@ -1,5 +1,8 @@
 (function($){
 
+var socket = io();
+var storage = {};
+
 window.onhashchange = function(evt){
 	var hash = evt.target.location.hash.split('/');
 	if(hash.length == 1){
@@ -92,6 +95,7 @@ document.addEventListener('multi-state-ready', function(e){ //multiforms emit th
 	updateDateTime();
 	setupValidationHandlers(e.detail.id);
 	setupBadInputPrevention(e.detail.id);
+	populateFieldsWithStorage(e.detail.id);
 });
 
 var setupValidationHandlers = function(formName){
@@ -157,13 +161,34 @@ var setupValidationHandlers = function(formName){
 							console.log(data);
 							var data = JSON.parse(data);
 							if(data.success){
-								console.log(data.success);
-								$('#content').fadeOut(89, function(){
-									$(this).html("Data submitted successfully").fadeIn(89).delay(800).fadeOut(89, function(){
-										var hash = window.location.hash.split("/");
-										window.location.hash = hash[0] + "/" + hash[1] + "/" + hash[2];
+								var hash = window.location.hash.split("/");
+								if(data.store){
+									if(!storage[hash[4]]) storage[hash[4]] = {};
+									if(!storage[hash[4]][hash[2]]) storage[hash[4]][hash[2]] = {};
+									for(var item in data.store){
+										storage[hash[4]][hash[2]][item] = data.store[item]; //locally store it
+									}
+									console.log(storage[hash[4]][hash[2]]);
+									socket.emit('store', {form: hash[4], program: hash[2], data:data.store}); //ask the server to store this junk too (maybe not later dunno by)
+								}
+								if(multiForms[hash[4]][hash[2]]){ //if it is a multiform we know about
+									$('#submit').parent().fadeOut(89, function(){$(this).remove()});
+									$('#'+hash[4]).fadeOut(89, function(){
+										$(this).html("Data submitted successfully").fadeIn(89).delay(800).fadeOut(89, function(){
+											var newstate = (multiForms[hash[4]][hash[2]].state + 1) % parseInt($('#'+hash[4]).attr('states'));
+											console.log(newstate);
+											var event = new CustomEvent('multi-change', {"detail": {"info": {state:newstate, data:multiForms[hash[4]][hash[2]].data}, "name": hash[4], "program": hash[2]}}); //go to the next state
+											document.dispatchEvent(event);
+										});
 									});
-								});
+								}
+								else{ //if it's a regular form
+									$('#content').fadeOut(89, function(){ 
+										$(this).html("Data submitted successfully").fadeIn(89).delay(800).fadeOut(89, function(){
+											window.location.hash = hash[0] + "/" + hash[1] + "/" + hash[2]; //go to program overview
+										});
+									});
+								}
 							}
 							else if(data.error){
 								console.log(data.error);
@@ -243,6 +268,17 @@ var setupBadInputPrevention = function(formName){
 				e.preventDefault();
 				return false;
 			});
+		}
+	});
+};
+
+var populateFieldsWithStorage = function(id){
+	console.log("populate");
+	var hash = window.location.hash.split("/");
+	$('#'+id).find('input[stored]').each(function(){
+		if($(this).val() == ""){
+			var field = $(this).attr('stored');
+			$(this).val(storage[hash[4]][hash[2]][field]);
 		}
 	});
 };

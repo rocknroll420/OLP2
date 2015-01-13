@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var path = require('path');
 var formidable = require('formidable');
 var util = require('util');
@@ -281,7 +282,13 @@ app.post('/form', function(req, res){
 							case "select":
 								connection.query(currentTask.query, function(err, rows, fields){
 									currentTask.handler(err, rows, fields, function(res){
-										selects[currentTaskName] = res;
+										if(currentTask.store){
+											msg.store = res.store; //this should be rewritten to only overwrite matching keys
+											selects[currentTaskName] = res.val;
+										}
+										else{
+											selects[currentTaskName] = res;
+										}
 										(++x < theForm.tasks.length) ? doTask(x) : endTasks();
 									});
 								});
@@ -338,6 +345,42 @@ app.get('/select', function(req, res){
 	}
 });
 
+var users = {};
+io.on('connection', function(socket){
+	users[socket.id] = {socket: socket, storage:{}};
+	//help.printUsers(users);
+	socket.on('disconnect', function(data){
+		delete users[socket.id];
+		//help.printUsers(users);
+	});
+	socket.on('store', function(data){
+		if(!data.form || !data.program || !data.data) return; //junk request
+		if(!users[socket.id].storage[data.form]) users[socket.id].storage[data.form] = {};
+		if(!users[socket.id].storage[data.form][data.program]) users[socket.id].storage[data.form][data.program] = {};
+		for(var item in data.data){
+			users[socket.id].storage[data.form][data.program][item] = data.data[item];
+		}
+	});
+	socket.on('unstore', function(data){ //UNTESTED
+		if(!data.form || !data.program || !data.data) return; //junk request
+		for(var item in data.data){
+			if(typeof users[socket.id].storage[data.form][data.program][item] != "undefined") delete users[socket.id].storage[data.form][data.program][item];
+		}
+	});
+});
+
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+
+var help = {
+	printUsers: function(users){
+		var users_string = "Sockets: {";
+		for(var id in users){
+			users_string += "\n\t"+id+", ";
+		}
+		users_string = users_string.substring(0, users_string.length - 2);
+		users_string += "\n}";
+		console.log(users_string);
+	}	
+};
