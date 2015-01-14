@@ -6,7 +6,7 @@
 	<br><br>
 	
 	<formline>
-		<label for="towID">Plankton Tow ID Number: </label><input id="towID" type="number" name="towID" required />
+		<label for="tow_id">Plankton Tow ID Number: (I think this will go later)</label><input id="tow_id" type="number" name="tow_id" stored="tow_id" required />
 		<p>if the Plankton Tow ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
 	
@@ -32,7 +32,7 @@
 	check all species that you observed
 	<div id="plankton_names">
 	</div>
-
+	<input id="plankton-repeats" name="plankton-repeats" type="hidden" />
 
 	<formline>
 		<label for="comment" type="textarea">Add Comments if required (optional):<br></label>
@@ -68,9 +68,29 @@
 					return;
 				}
 				else{
+					var checkboxes = [];
 					for(var x in data.success){
-						$('#plankton_names').append($('<formline class="checkboxline" />').html("<input id='"+data.success[x].code+"' name='"+data.success[x].code+"' value='"+data.success[x].name+"' type='checkbox'/><label for='"+data.success[x].code+"' type='checkbox'>"+data.success[x].name+"</label>"));
+						$('#plankton_names').append($('<formline class="checkboxline" />').html("<input id='plankton-"+x+"-name' name='plankton-"+x+"-name' value='"+data.success[x].code+"' type='checkbox'/><label for='plankton-"+x+"-name' type='checkbox'>"+data.success[x].name+"</label>"));
+						checkboxes.push(false);
 					}
+					
+					$('input[type="checkbox"]').change(function(){
+						var i = parseInt($(this).attr('name').split("-")[1]);
+						if($(this).prop('checked')){
+							checkboxes[i] = true;
+						}
+						else{
+							checkboxes[i] = false;
+						}
+						var string = "";
+						for(var j in checkboxes){
+							if(checkboxes[j]){
+								string += j;
+								if(j < checkboxes.length - 1) string += ",";
+							}
+						}
+						$('#plankton-repeats').val(string);
+					});
 				}
 				
 				//console.log(data);

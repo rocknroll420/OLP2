@@ -1,8 +1,9 @@
 (function($){
 
 var socket = io();
-var storage = {};
+var storage = {}; //holds on to whatever you want
 
+//HASH CHANGE STUFF
 window.onhashchange = function(evt){
 	var hash = evt.target.location.hash.split('/');
 	if(hash.length == 1){
@@ -31,6 +32,7 @@ document.addEventListener('form', function(e){
 document.addEventListener('test', function(e){ //loads the test page. remove later
 	makeForm("test");
 });
+//NOT HASH CHANGE STUFF
 
 var updateContent = function(newContent, cb){
 	if(typeof cb == "undefined") cb = function(){return;};
@@ -48,7 +50,7 @@ var makeForm = function(formName){
 };
 
 var multiForms = {}; //stores states we be at for each multiform encountered
-document.addEventListener('form-ready', function(e){
+document.addEventListener('form-ready', function(e){ //forms emit this when they fully load 
 	var hash = window.location.hash.split("/");
 	if(typeof hash[2] == "string"){
 		switch(hash[2]){
@@ -171,7 +173,7 @@ var setupValidationHandlers = function(formName){
 									console.log(storage[hash[4]][hash[2]]);
 									socket.emit('store', {form: hash[4], program: hash[2], data:data.store}); //ask the server to store this junk too (maybe not later dunno by)
 								}
-								if(multiForms[hash[4]][hash[2]]){ //if it is a multiform we know about
+								if(multiForms[hash[4]] && multiForms[hash[4]][hash[2]]){ //if it is a multiform we know about
 									$('#submit').parent().fadeOut(89, function(){$(this).remove()});
 									$('#'+hash[4]).fadeOut(89, function(){
 										$(this).html("Data submitted successfully").fadeIn(89).delay(800).fadeOut(89, function(){
@@ -231,15 +233,15 @@ var setupValidationHandlers = function(formName){
 	});
 };
 
-var setupBadInputPrevention = function(formName){
+var setupBadInputPrevention = function(formName){ //prevents users from entering certain characters to an input element if "special" attr is set on the element. special can take a " " separated list of special attributes like a class. 
 	var getSpecialInts = function(specials){
 		var ints = [];
 		for(var item in specials){
 			switch(specials[item]){
-				case "pos":
+				case "pos": //positive number - prevents non-digits except decimal
 					ints.push(173);
 					break;
-				case "int":
+				case "int": //integer - prevents non-digits except for minus sign
 					ints.push(190);
 					break;
 				default:
@@ -272,7 +274,7 @@ var setupBadInputPrevention = function(formName){
 	});
 };
 
-var populateFieldsWithStorage = function(id){
+var populateFieldsWithStorage = function(id){ //inputs with stored values (indicated with a "stored" attr) have their values filled in from the global storage object we're using 
 	console.log("populate");
 	var hash = window.location.hash.split("/");
 	$('#'+id).find('input[stored]').each(function(){
@@ -283,7 +285,7 @@ var populateFieldsWithStorage = function(id){
 	});
 };
 
-var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; 
 var updateDateTime = function(){ //date formatting
 	var now = new Date();
 	var day = now.getDate();

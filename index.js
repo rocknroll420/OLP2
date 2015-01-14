@@ -230,29 +230,41 @@ app.post('/form', function(req, res){
 							post = {cols: cols, vals: vals};
 						}
 						else post = {};
+						
+						console.log(post); //wtf did i write lol
+						
 						return post;
 					};
-					var doTask = function(x, repeat){
-						if(typeof repeat == "undefined") repeat = 0;
+					var doTask = function(x, repeat, repeats){
 						if(x >= theForm.tasks.length || x < 0){console.log("Bad task index " + x); return;} //in case some bad shit happens
 						post = {};
 						var currentTaskName = theForm.tasks[x];
 						var currentTask = form_sql.sql[currentTaskName];
+						if(currentTask.repeat){ //check for initializing repeat stuff and quitting if we're in too deep
+							if(typeof repeat == "undefined") repeat = 0;
+							if(typeof repeats == "undefined") repeats = [];
+							if(repeats.length < 1){ //init the repeat array
+								repeats = fields[currentTask.repeat].split(","); //we stored the list of stuff we want to repeat in a hidden form field
+							}
+							if(repeat > repeats.length) (++x < theForm.tasks.length) ? doTask(x) : endTasks(); //do next crap if we get in on a bad repeat index
+						}
 						switch(currentTask.type){
 							case "insert":
-								post = buildPost(currentTask, repeat);
+								post = (currentTask.repeat) ? buildPost(currentTask, parseInt(repeats[repeat])) : buildPost(currentTask);
 								connection.query('INSERT INTO ' + currentTask.table + ' SET ?', post, function(err, result){
 									if(err){
 										console.log("bad query " + util.inspect(post));
+										if(!msg.error) msg.error = "";
 										msg.error += "Post failed ";
 									}
 									else{
 										console.log(currentTask.table + " inserted successfully");
+										if(!msg.success) msg.success = "";
 										msg.success += "Database updated ";
 									}
 									if(currentTask.repeat){//we might have to repeat a task
-										if(repeat < parseInt(fields[currentTask.repeat])){ //do it again if we haven't repeated enough
-											doTask(x, ++repeat);
+										if(repeat < repeats.length - 1){ //do it again if we haven't repeated enough
+											doTask(x, ++repeat, repeats);
 										}
 										else{ //on to the next task if we have
 											(++x < theForm.tasks.length) ? doTask(x) : endTasks();
