@@ -1,6 +1,5 @@
 <h2>Aquatic Invasive Species (AIS) Survey</h2>
 
-<!---<form method="POST" name="aisSurvey" action="aisCheck.php?ROV=<?php echo $rov; ?>">--->
 <form id="ais" name="ais" action="SETBYJS" method="post" enctype="multipart/form-data" target="iframe">
 	<h3 id="section-title"></h3>
 	<u><b><span id="survey-type" class="red underline">------------------</span></b></u> - If you chose the wrong type of Survey press "Cancel" at the bottom.<br><br>
@@ -8,7 +7,7 @@
 	<br><br>
 
 	<formline>
-		<label for="tripID">Trip ID Number: </label><input type="number" id="tripID" name="tripID" required>
+		<label for="trip_id">Trip ID Number: </label><input type="number" id="trip_id" name="trip_id" required>
 		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
 		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
@@ -41,7 +40,7 @@
 
 	<button id="review">Review</button>
 </form>
-<a id="back" href="#!/program/AIS">[Cancel and Return to Module Menu]</a>
+<a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
 		var hash = window.location.hash.split('/');

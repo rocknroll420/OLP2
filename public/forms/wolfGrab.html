@@ -1,0 +1,113 @@
+<h2>Wolffish Study - Grab Samples</h2>
+
+<form id="wolfGrab" name="wolfGrab" action="form/?form=wolfGrab" method="post" enctype="multipart/form-data" target="iframe">
+	<h3 id="section-title"></h3>
+	
+	Date: <date></date>
+	<br><br>
+	
+	<formline>
+		<label for="trip_id">Trip ID Number: </label><input type="number" id="trip_id" name="trip_id" required />
+		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
+		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
+	</formline>
+	
+	<formline>
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" required />
+	</formline>
+	
+	<formline>
+		<label for="time_h">Time (HH:MM) </label><input id="time_h" name="time_h" time="hr" for="time_full" type="number" min="0" max="23" special="pos int" required /><label for="time_m"> : </label><input id="time_m" name="time_m" time="min" for="time_full" type="number" min="0" max="59 special="pos int" required /> <timezone></timezone> 24 hour format
+		<input id="time_full" name="time_full" type="hidden" />
+	</formline>
+	
+	<formline>
+		<label for="wolf_site">Wolffish Site Number: </label><input id="wolf_site" name="wolf_site" type="number" special="pos int" required />
+	</formline>
+	
+	Grab Sample Position:<br>
+	<formline>
+		<label for="latdeg">Latitude --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" special="pos int" required /> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" special="pos" required /> (m.mmm)
+		<input type="hidden" id="lat" name="lat" />
+	</formline>
+	<formline>
+		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" special="pos int" required /> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" special="pos" required /> (m.mmm)
+		<input type="hidden" id="lon" name="lon" />
+	</formline>
+	
+	Water Depth: 
+	<formline>
+		<label for="water_depth">Water Depth: </label><input id="water_depth" name="water_depth" type="number" min="1" max="999" step="0.1" special="pos" required/> (m)
+	</formline>
+	
+	<formline>
+		<label for="grab1">Grab Sample #1 - did you collect a sample? </label>
+		<select id="grab1" name="grab1" value="">
+			<option value="yes">Yes</option>
+			<option value="no">No</option>
+			<option value="n-a">Did Not Complete</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
+	
+	<formline>
+		<label for="grab2">Grab Sample #2 - did you collect a sample? </label>
+		<select id="grab2" name="grab2" value="">
+			<option value="yes">Yes</option>
+			<option value="no">No</option>
+			<option value="n-a">Not Required or Did Not Complete</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
+	
+	<formline>
+		<label for="sedisamp">Sediment Samples - did you bottle and label two (2) samples? </label>
+		<select id="sedisamp" name="sedisamp" value="">
+			<option value="yes">Yes</option>
+			<option value="no">No</option>
+			<option value="n-a">Did Not Complete</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
+	
+	<formline>
+		<label for="biosamp">Biological Sample - did you bottle and label the sample? </label>
+		<select id="biosamp" name="biosamp" value="">
+			<option value="yes">Yes</option>
+			<option value="no">No</option>
+			<option value="n-a">Did Not Complete</option>
+			<option SELECTED value=""></option>
+		</select>
+	</formline>
+	
+	<formline>
+		<label for="comment">Add Comments if required (optional): </label>
+		<br>
+		<textarea id="comment" name="comment" rows="3" cols="37"></textarea>
+	</formline>
+	
+	<button id="review">Review</button>
+</form>
+
+<a id="back" href="">[Cancel and Return to Module Menu]</a>
+<script>
+	$(document).ready(function(){
+		var hash = window.location.hash.split("/");
+		if(typeof hash[2] == "string"){
+			switch(hash[2]){
+				case "AIS":
+					$('#module').val(1);
+					$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+					break;
+				case "ecosys":
+					$('#module').val(2);
+					$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+					break;
+				case "wolffish":
+					$('#module').val(3);
+					$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+					break;
+			}
+		}
+	});
+</script>

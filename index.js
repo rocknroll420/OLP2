@@ -16,123 +16,12 @@ app.get('/', function(req, res){
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.post('/form', function(req, res){
-//	console.log(util.inspect(req.query));
-//	var form = new formidable.IncomingForm();
-//	form.encoding = 'utf-8';
-//	form.parse(req, function(error, fields, files) {
-//		if(error){
-//			console.log("bad request " + util.inspect(form));
-//			res.write(JSON.stringify({error:"Couldn't read form"}));
-//			res.end();
-//		}
-//		else{
-//			var theForm;
-//			var connection = mysql.createConnection(db);
-//			connection.connect();
-//			if(theForm = form_sql.forms[req.query.form]){
-//				var post = {};
-//				var msg = {};
-//				var selects = {};
-//				var doTasks = function(x){
-//					if(x >= theForm.tasks.length || x < 0){console.log("Bad task index " + x); return;} //in case some bad shit happens
-//					post = {};
-//					var currentTaskName = theForm.tasks[x];
-//					var currentTask = form_sql.sql[currentTaskName];
-//					var doRecursion = function(){ //call again, or end
-//						if(x++ < theForm.tasks.length - 1){
-//							doTasks(x);
-//						}
-//						else{
-//							connection.end();
-//							res.write(JSON.stringify(msg));
-//							res.end();
-//						}
-//					};
-//					if(currentTask.type == "select"){
-//						connection.query(currentTask.query, function(err, rows, fields){
-//							selects[currentTaskName] = currentTask.handler(err, rows, fields);
-//							doRecursion();
-//						});
-//					}
-//					else if(currentTask.type == "insert"){
-//						var doInsert = function(k){
-//							for(var j in currentTask.pairings){
-//								if(j == "date"){
-//									var now = new Date();
-//									var dateString = now.getFullYear() + "-";
-//									dateString += now.getMonth()+1 + "-";
-//									dateString += now.getDate();
-//									post[j] = dateString;
-//								}
-//								else if(j == "obs_num" || currentTask.pairings[j] == "obs_num"){
-//									post[j] = selects["get_obs_num"];
-//									if(post[j] < 0){ //if we don't have the obs_num we try to get it again
-//										connection.query(form_sql.sql["get_obs_num"].query, function(err, rows, fields){
-//											post[j] = form_sql.sql["get_obs_num"].handler(err, rows, fields);
-//											selects["get_obs_num"] = posts[j];
-//										});
-//									}
-//								}
-//								else{
-//									if(currentTask.repeat){
-//										var pairing = (typeof currentTask.pairings[j] == "string") ? currentTask.pairings[j].split('-') : [];
-//										if(pairing.length > 1){
-//											pairing[1] = k;
-//											pairing = pairing[0] + "-" + pairing[1] + "-" + pairing[2];
-//											post[j] = fields[pairing];
-//										}
-//										else{ //this one is taken from the same field each time
-//											post[j] = fields[currentTask.pairings[j]];
-//										}
-//									}
-//									else{
-//										post[j] = fields[currentTask.pairings[j]];
-//									}
-//								}
-//							}
-//							connection.query('INSERT INTO ' + currentTask.table + ' SET ?', post, function(err, result){
-//								if(err){
-//									console.log("bad query " + util.inspect(post));
-//									msg.error += "Post failed ";
-//								}
-//								else{
-//									console.log(currentTask.table + " updated successfully");
-//									msg.success += "Database updated ";
-//								}
-//								if(currentTask.repeat){
-//									if(k < parseInt(fields[currentTask.repeat])){
-//										doInsert(++k);
-//									}
-//									else{
-//										doRecursion();
-//									}
-//								}
-//								else{
-//									doRecursion();
-//								}
-//							});
-//						};
-//						doInsert(0);
-//					}
-//				}
-//				doTasks(0);
-//			}
-//			else{
-//				console.log("Form processing failed, " + req.query.form + " not defined");
-//				connection.end();
-//				res.write(JSON.stringify({error:"Post failed"}));
-//				res.end();
-//			}
-//		}
-//	});
-//});
-
 app.post('/form', function(req, res){
 	console.log(util.inspect(req.query));
 	var form = new formidable.IncomingForm();
 	form.encoding = 'utf-8';
 	form.parse(req, function(error, fields, files) {
+		//console.log(fields); //debug
 		if(error){
 			console.log("bad request " + util.inspect(form));
 			res.write(JSON.stringify({error:"Couldn't read form"}));
@@ -211,17 +100,6 @@ app.post('/form', function(req, res){
 										});
 									}
 								}
-								//else if(j == "tow_id" || currentTask.pairings[j] == "tow_id"){ //if there ends up being more of these type of things there should be some sort of "get" function with retry built in
-								//	val = selects["get_tow_id"];
-								//	if(val < 0){ //if we don't have tow_id try again
-								//	connection.query(form_sql.sql["get_tow_id"].query, function(err, rows, fields){
-								//		form_sql.sql["get_tow_id"].handler(err, rows, fields, function(res){
-								//			val = res;
-								//			selects["get_tow_id"] = val;
-								//		});
-								//	});
-								//	}	
-								//} //this is different now for a moment so comment
 								else{
 									val = fields[currentTask.pairings[j]];
 								}
@@ -230,9 +108,6 @@ app.post('/form', function(req, res){
 							post = {cols: cols, vals: vals};
 						}
 						else post = {};
-						
-						console.log(post); //wtf did i write lol
-						
 						return post;
 					};
 					var doTask = function(x, repeat, repeats){
@@ -246,14 +121,14 @@ app.post('/form', function(req, res){
 							if(repeats.length < 1){ //init the repeat array
 								repeats = fields[currentTask.repeat].split(","); //we stored the list of stuff we want to repeat in a hidden form field
 							}
-							if(repeat > repeats.length) (++x < theForm.tasks.length) ? doTask(x) : endTasks(); //do next crap if we get in on a bad repeat index
+							if(repeat >= repeats.length) (++x < theForm.tasks.length) ? doTask(x) : endTasks(); //do next crap if we get in on a bad repeat index
 						}
 						switch(currentTask.type){
 							case "insert":
 								post = (currentTask.repeat) ? buildPost(currentTask, parseInt(repeats[repeat])) : buildPost(currentTask);
 								connection.query('INSERT INTO ' + currentTask.table + ' SET ?', post, function(err, result){
 									if(err){
-										console.log("bad query " + util.inspect(post));
+										console.log("bad query for " + currentTaskName + util.inspect(post));
 										if(!msg.error) msg.error = "";
 										msg.error += "Post failed ";
 									}

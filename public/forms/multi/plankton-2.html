@@ -40,12 +40,11 @@
 	</formline>
 	
 	<formline>
-		<button id="review">Review Data</button>
+		<button id="review">Review</button>
 	</formline>
 </form>
 <script>
 	$(document).ready(function(){
-		//var hash = window.location.hash.split('/');
 		var getNames = function(retry){
 			$.get('select/?s=get_plankton_names', function(data){
 				data = JSON.parse(data);
@@ -89,12 +88,10 @@
 								if(j < checkboxes.length - 1) string += ",";
 							}
 						}
+						if(string.length > 1) string = string.slice(0, -1);
 						$('#plankton-repeats').val(string);
 					});
 				}
-				
-				//console.log(data);
-				
 			});
 		};
 		getNames(0);

@@ -1,0 +1,84 @@
+<h2>Crab Pot Survey</h2>
+
+<form id="crab" name="crab" action="form/?form=crab" method="post" enctype="multipart/form-data" target="iframe">
+	<h3 id="section-title"></h3>
+	Date: <date></date>
+	<br><br>
+	
+	<formline>
+		<label for="trip_id">Trip ID Number: </label><input type="number" id="trip_id" name="trip_id" special="pos int" required/>
+		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
+		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
+	</formline>
+	
+	<formline>
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" autocomplete="off" type="text" required />
+	</formline>
+	
+	<formline>
+		<label for="time_h">Time of Crab Pot Retrieval (HH:MM)</label><input id="time_h" name="time_h" time="h" for="time_full" type="number" min="0" max="23" special="pos int" required/><label for="time_m"> : </label><input id="time_m" name="time_m" for="time_full" time="min" type="number" special="pos int" min="0" max="59" required/> <timezone></timezone> 24 hour format
+		<input id="time_full" name="time_full" type="hidden" />
+	</formline>
+	
+	Crab Pot Position:<br>
+	<formline>
+		<label for="latdeg">Latitude --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" special="pos int" required /> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" special="pos" required /> (m.mmm)
+		<input type="hidden" id="lat" name="lat" />
+	</formline>
+	<formline>
+		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" special="pos int" required /> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" special="pos" required /> (m.mmm)
+		<input type="hidden" id="lon" name="lon" />
+	</formline>
+	
+	<formline>
+		<label for="water_depth">Water Depth: </label><input id="water_depth" name="water_depth" type="number" min="1" max="999" step="0.1" special="pos" required/> (m)
+	</formline>
+	
+	<formline>
+		<label for="timeinwater">How long was the Crab Pot in the water? (hours - integer or 1 decimal): </label><input id="timeinwater" name="timeinwater" type="number" special="pos" min="0.1" step="0.1" required/>
+	</formline>
+	
+	<u>Crab Sample Measurements:</u><br>
+	Take measurements from a sub-sample of <span id="i"></span> Snow Crabs<br><br> 
+	<div id="crab-measure"></div>
+	<input id="crab-repeats" name="crab-repeats" type="hidden" value="" />
+	
+	<button id="review">Review</button>
+</form>
+
+<br><br>
+<a id="back" href="">[Cancel and Return to Module Menu]</a>
+<script>
+	$(document).ready(function(){
+		var hash = window.location.hash.split("/");
+		if(typeof hash[2] == "string"){
+			switch(hash[2]){
+				case "AIS":
+					$('#module').val(1);
+					$('#section-title').html("Field Program: Monitoring of Aquatic Invasive Species");
+					break;
+				case "ecosys":
+					$('#module').val(2);
+					$('#section-title').html("Field Program: Coastal Ecosystem Monitoring and Sustainable Fisheries Research");
+					break;
+				case "wolffish":
+					$('#module').val(3);
+					$('#section-title').html("Field Program: Mapping Nearshore Habitat for Atlantic Wolffish");
+					break;
+			}
+		}
+		
+		var string = "";
+		for(var i = 0; i < 10; i++){
+			$('#crab-measure').append($('<formline/>').html(
+				'<label for="crab-'+i+'-length">Length (mm): </label><input id="crab-'+i+'-length" name="crab-'+i+'-length" type="number" /><label for="crab-'+i+'-width">Width of Carapace (mm): </label><input id="crab-'+i+'-width" name="crab-'+i+'-width" type="number" /><label for="crab-'+i+'-sex">Sex: </label><select id="crab-'+i+'-sex" name="crab-'+i+'-sex"><option value="F">Female</option><option value="M">Male</option><option SELECTED value=""></option></select>'
+			));
+			string += i + ",";
+		}
+		$('#i').text(i);
+		$('#crab-repeats').val(string.slice(0,-1));
+		
+		var event = new CustomEvent("form-ready", {"detail": {"name": "crab"}});
+		document.dispatchEvent(event);
+	});
+</script>

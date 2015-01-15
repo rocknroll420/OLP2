@@ -280,7 +280,7 @@ var populateFieldsWithStorage = function(id){ //inputs with stored values (indic
 	$('#'+id).find('input[stored]').each(function(){
 		if($(this).val() == ""){
 			var field = $(this).attr('stored');
-			$(this).val(storage[hash[4]][hash[2]][field]);
+			if(storage[hash[4]] && storage[hash[4]][hash[2]] && storage[hash[4]][hash[2]][field]) $(this).val(storage[hash[4]][hash[2]][field]);
 		}
 	});
 };
