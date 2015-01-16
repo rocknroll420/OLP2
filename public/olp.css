@@ -47,6 +47,14 @@ textarea{
 	text-decoration:underline;
 }
 
+.sci-name{
+	font-style:italic;
+}
+
 .checkboxline{
 	margin:3px 0;
+}
+
+x{
+	cursor:pointer;
 }

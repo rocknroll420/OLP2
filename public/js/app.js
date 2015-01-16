@@ -100,6 +100,11 @@ document.addEventListener('multi-state-ready', function(e){ //multiforms emit th
 	populateFieldsWithStorage(e.detail.id);
 });
 
+document.addEventListener('resetup-validation', function(e){
+	setupValidationHandlers(e.detail.id);
+	setupBadInputPrevention(e.detail.id);
+});
+
 var setupValidationHandlers = function(formName){
 	$('#'+formName).validate({
 		submitHandler: function(form){
