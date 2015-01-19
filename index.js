@@ -67,11 +67,11 @@ app.post('/form', function(req, res){
 											post[j] = fields[pairing];
 										}
 										else{ //this one is taken from the same field each time
-											post[j] = fields[currentTask.pairings[j]];
+											post[j] = (typeof currentTask.pairings[j] == "number") ? currentTask.pairings[j] : fields[currentTask.pairings[j]]; //so we can set stuff to constant numbers
 										}
 									}
 									else{
-										post[j] = fields[currentTask.pairings[j]];
+										post[j] = (typeof currentTask.pairings[j] == "number") ? currentTask.pairings[j] : fields[currentTask.pairings[j]]; //so we can set stuff to constant numbers
 									}
 								}
 							}

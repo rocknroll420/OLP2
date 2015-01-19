@@ -1,0 +1,178 @@
+<h2></h2>
+<form id="seine-1" name="seine-1" action="form/?form=seineObs" method="post" enctype="multipart/form-data" target="iframe">
+	<h3 id="section-title"></h3>
+	Date: <date></date>
+	<br/><br/>
+	
+	<formline>
+		<label for="seine_id">Beach seine number: </label><input id="seine_id" name="seine_id" type="number" stored="seine_id" special="pos" required />
+		<p>If the Beach Seine Survey Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
+	</formline>
+	
+	<formline>
+		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required />
+	</formline>
+	
+	<h4 class="underline">Activity 1 - Individual Fish Measurements:</h4>
+	<p>Submit one measurement for <span class="red">each fish</span> that you have collected.</p>
+	<div id="fish-measures">
+	</div>
+	<input id="fish-measures-repeats" name="fish-measures-repeats" type="text"/>
+	
+	<h4 class="underline"> Activity 2 - Species Observed:</h4>
+	<p>Check all species that you observed and <span class="red">enter this list</span> once for your Beach Seine Survey.</p>
+	<div id="seine-names">
+		<input id="seine-obs-repeats" name="seine-obs-repeats" type="text" />
+	</div>
+	
+	<formline>
+		<label for="comment">Add comments (optional): </label><textarea id="comment" name="comment" />
+		<caption for="comment">If you have collected a species that is not in the form please name it in Comments. </caption>
+	</formline>
+	
+	<button id="review">Review</button>
+</frame>
+<script>
+	$(document).ready(function(){
+		var getNames = function(retry){
+			$.get('/select?s=get_seine_names', function(data){
+				data = JSON.parse(data);
+				console.log(data);
+				if(data.error){
+					if(retry < 5){
+						console.log("select request failed... requesting again");
+						getNames(++retry);
+						return;
+					}
+					console.log("seine_names requests reached maximum retries");
+					return;
+				}
+				else if(!data.success){
+					if(retry < 5){
+						console.log("no response from server... requesting again");
+						getNames(++retry);
+						return;
+					}
+					console.log("server busy try again later");
+					return;
+				}
+				else{
+					data = data.success;
+					var checkboxes = [];
+					var measureFish = {};
+					for(var x in data){
+						$('#seine-names').append($('<formline class="checkboxline"/>')
+							.html('<input id="seine-'+x+'-name" name="seine-'+x+'-name" value="'+data[x].code+'" type="checkbox" /><label for="seine-'+x+'-name">'+data[x].name+' - <span class="sci-name">'+data[x].sci_name+'</span></label>')
+						);
+						checkboxes.push(false);
+						if(data[x].to_measure){
+							measureFish[x] = data[x];
+						}
+					}
+					
+					measureFishOptionString = "<option value=''></option>";
+					for(var y in measureFish){
+						measureFishOptionString += "<option value='"+measureFish[y].code+"'>"+measureFish[y].name+"</option>";
+					}
+					measureFishOptionString += "<option value='XX'>Not in list (write name in comment)</option>";
+					
+					var done = [];
+					var addFishMeasure = function(x){
+						done.push(false);
+						var id1 = id2 = id3 = "fish-" + x;
+						id1 += "-name";
+						id2 += "-length";
+						id3 += "-comment";
+						$('#fish-measures').append($('<div id="fish-'+x+'-chunk" />').hide()
+							.append($('<formline/>')
+								.append([
+									$('<label for="'+id1+'" />').text("Fish Species: "),
+									$('<select id="'+id1+'" name="'+id1+'" />').html(measureFishOptionString).change(function(){
+										if(!$('#'+id2).is(":visible")){
+											$('label[for="'+id2+'"], label[for="'+id3+'"], #'+id2+', #'+id3).fadeIn(89).parent().hover(
+												function(e){
+													if(!$(this).find("x").is(":visible")) $(this).find("x").fadeIn(89);
+												},
+												function(e){
+													if($(this).find("x").is(":visible")) $(this).find("x").fadeOut(89);
+												}
+											);
+											$('#'+id1+', #'+id2).each(function(){
+												$(this).attr("required", "true");
+											});
+										}
+										if($(this).val() == "XX"){
+											$(this).parent().find('textarea').attr("placeholder", "Fish Name").attr("required", "true").focus();
+										}
+										else{
+											$(this).parent().find('textarea').attr("placeholder", "Comment?").removeAttr('required');
+										}
+									}),
+									$('<label for="'+id2+'" />').text("Fish length (mm): ").hide(),
+									$('<input id="'+id2+'" name="'+id2+'" type="number" min="1" />').hide().keyup(function(){
+										if($(this).val().length > 0 && !done[x]){
+											addFishMeasure(x + 1);
+											done[x] = true;
+										}
+										else if($(this).val() == ""){
+											done[x] = false;
+										}
+										var string = "";
+										for(var y in done){
+											if(done[y]) string += y + ","
+										}
+										$('#fish-measures-repeats').val(string.slice(0,-1));
+									}),
+									$('<label for="'+id3+'"/>').hide(),
+									$('<textarea id="'+id3+'" name="'+id3+'" placeholder="Comment?" />').hide(),
+									$('<x title="remove fish" for="'+x+'">x</x>').hide().click(function(){
+										$(this).parent().parent().remove();
+										done[parseInt($(this).attr('for'))] = false;
+										var string = "";
+										for(var y in done){
+											if(done[y]) string += y + ","
+										}
+										$('#fish-measures-repeats').val(string.slice(0,-1));
+										if($('#fish-measures').children().length < 1) addFishMeasure(done.length);
+									})
+								])
+							)
+							.fadeIn(89)
+						);
+						//update the repeats
+						
+					};
+					addFishMeasure(0);
+					
+					var removeFishChunk = function(x){ //will handle removing something we entered earlier that we don't want anymore
+						$('#fish-'+x+'-chunk').fadeOut(89, function(){$(this).remove();}); 
+						//update the repeats list thing after
+					};
+					
+					$('input[type="checkbox"]').change(function(){
+						var i = parseInt($(this).attr('name').split("-")[1]);
+						if($(this).prop('checked')){
+							checkboxes[i] = true;
+						}
+						else{
+							checkboxes[i] = false;
+						}
+						var string = "";
+						for(var j in checkboxes){
+							if(checkboxes[j]){
+								string += j;
+								if(j < checkboxes.length - 1) string += ",";
+							}
+						}
+						if(string.length > 1) string = string.slice(0, -1);
+						$('#seine-obs-repeats').val(string);
+					});
+					
+					var event = new CustomEvent("form-ready", {"detail": {"id": "seineObs"}});
+					document.dispatchEvent(event);
+				}
+			});
+		};
+		getNames(0);
+	});
+</script>

@@ -55,6 +55,14 @@ textarea{
 	margin:3px 0;
 }
 
+.button{
+	cursor:pointer;
+}
+
+.button:hover{
+	text-decoration:underline;
+}
+
 x{
 	cursor:pointer;
 }

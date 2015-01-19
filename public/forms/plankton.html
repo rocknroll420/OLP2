@@ -4,7 +4,7 @@
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
-		document.getElementById('plankton').addEventListener('multi-change', function(e){ //this should be where we populate a field with tow_id (although sockets make more sense all the time)
+		document.getElementById('plankton').addEventListener('multi-change', function(e){
 			$('#shit').attr('state', e.detail.info.state); //i also leave after;
 			$.get('/forms/multi/plankton-'+e.detail.info.state+'.html', function(data){ 
 				$('#plankton').fadeOut(89, function(){
