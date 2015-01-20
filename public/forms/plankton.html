@@ -5,15 +5,23 @@
 <script>
 	$(document).ready(function(){
 		document.getElementById('plankton').addEventListener('multi-change', function(e){
-			$('#shit').attr('state', e.detail.info.state); //i also leave after;
-			$.get('/forms/multi/plankton-'+e.detail.info.state+'.html', function(data){ 
-				$('#plankton').fadeOut(89, function(){
-					$(this).html(data);
-					var id = "plankton-" + e.detail.info.state;
-					var event = new CustomEvent("multi-state-ready", {"detail": {"name": "plankton", "state": e.detail.info.state, "id": id}});
+			$('#shit').attr('state', e.detail.state); //i also leave after;
+			$.get('/forms/multi/plankton-'+e.detail.state+'.html', function(data){ 
+				if(e.detail.firstRun){ //came in from the menu
+					$('#plankton').html(data);
+					var id = "plankton-" + e.detail.state;
+					var event = new CustomEvent("multi-state-ready", {"detail": {"name": "plankton", "state": e.detail.state, "id": id}});
 					document.dispatchEvent(event);
-					$(this).fadeIn(89);
-				});
+				}
+				else{ //vs coming in from previous state
+					$('#plankton').fadeOut(89, function(){ 
+						$(this).html(data);
+						var id = "plankton-" + e.detail.state;
+						var event = new CustomEvent("multi-state-ready", {"detail": {"name": "plankton", "state": e.detail.state, "id": id}});
+						document.dispatchEvent(event);
+						$(this).fadeIn(89);
+					});
+				}
 			});
 		});
 		
@@ -22,7 +30,7 @@
 			var state = parseInt($(this).attr('state'));
 			state = ++state % 3;
 			$('#revise, #submit').remove();
-			var event = new CustomEvent("multi-change", {"detail": {info:{"state": state}, "name": hash[4], "program": hash[2]}});
+			var event = new CustomEvent("multi-change", {"detail": {"state": state, "name": hash[4], "program": hash[2]}});
 			document.dispatchEvent(event);
 		});
 		

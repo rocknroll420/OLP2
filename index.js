@@ -254,6 +254,22 @@ io.on('connection', function(socket){
 			if(typeof users[socket.id].storage[data.form][data.program][item] != "undefined") delete users[socket.id].storage[data.form][data.program][item];
 		}
 	});
+	socket.on('getStore', function(data){
+		console.log("get store: " + util.inspect(data));
+		if(!data.form || !data.program || !data.store) return; //junk request
+		var res = {success: false, failure: false, program: data.program, form: data.form};
+		for(var i in data.store){
+			if(users[socket.id].storage[data.form] && users[socket.id].storage[data.form][data.program] && users[socket.id].storage[data.form][data.program][data.store[i]]){
+				if(!res.success) res.success = {};
+				res["success"][data.store[i]] = users[socket.id].storage[data.form][data.program][data.store[i]];
+			}
+			else{ 
+				if(!res.failure) res.failure = {};
+				res["failure"][data.store[i]] = "Not stored!";
+			}
+		}
+		socket.emit('getStore', res);
+	});
 });
 
 http.listen(3000, function(){

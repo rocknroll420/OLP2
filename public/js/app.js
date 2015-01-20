@@ -1,31 +1,31 @@
 (function($){
 
-var socket = io();
+var socket = io(); //get the socket.io going
 var storage = {}; //holds on to whatever you want
 
 //HASH CHANGE STUFF
 window.onhashchange = function(evt){
 	var hash = evt.target.location.hash.split('/');
-	if(hash.length == 1){
+	if(hash.length == 1){ //no hash is front page
 		updateContent('pages/front.html');
 	}
-	else{
-		var event = new CustomEvent(hash[1], {"detail": hash});
+	else{ 
+		var event = new CustomEvent(hash[1], {"detail": hash}); //fire an event on the first part of the hash and it should cascade through the whole hash
 		document.dispatchEvent(event);
 	}
 };
 
-document.addEventListener('program', function(e){
-	if(e.detail.length == 3){
+document.addEventListener('program', function(e){ //select a program
+	if(e.detail.length == 3){ //only load it if we're not deeper into the site
 		updateContent('pages/' + e.detail[2] + '.html');
 	}
-	else if(e.detail[3] == "form"){
+	else if(e.detail[3] == "form"){ //usually we really wanted a form
 		var event = new CustomEvent("form", {"detail": e.detail});
 		document.dispatchEvent(event);
 	}
 });
 
-document.addEventListener('form', function(e){
+document.addEventListener('form', function(e){ //load a form
 	makeForm(e.detail[4]);
 });
 
@@ -34,14 +34,14 @@ document.addEventListener('test', function(e){ //loads the test page. remove lat
 });
 //NOT HASH CHANGE STUFF
 
-var updateContent = function(newContent, cb){
+var updateContent = function(newContent, cb){ //update everything on the page to a new file
 	if(typeof cb == "undefined") cb = function(){return;};
 	$.get(newContent, function(data){
 		$('#content').fadeOut(89, function(){$(this).html(data).fadeIn(89);cb();});
 	});
 };
 
-var makeForm = function(formName){
+var makeForm = function(formName){ //really the handler for a form hashchange
 	var hash = window.location.hash.split("/");
 	updateContent('forms/'+formName+'.html', function(){
 		$('#back').attr('href', hash[0] + "/" + hash[1] + "/" + hash[2]);
@@ -77,7 +77,7 @@ document.addEventListener('form-ready', function(e){ //forms emit this when they
 		else if(typeof multiForms[e.detail.name][hash[2]] == "undefined"){
 			multiForms[e.detail.name][hash[2]] = {state: 0, data: {}};
 		}
-		var event = new CustomEvent('multi-change', {"detail": {"info": multiForms[e.detail.name][hash[2]], "name": hash[4], "program": hash[2]}});
+		var event = new CustomEvent('multi-change', {"detail": {"state": multiForms[e.detail.name][hash[2]].state, "name": hash[4], "program": hash[2], "firstRun": true}}); //firstRun keeps the form from fading in instantly again when the specific multi-form is loaded from the multi-form start page 
 		document.getElementById(e.detail.name).dispatchEvent(event);
 	}
 	else{
@@ -87,8 +87,7 @@ document.addEventListener('form-ready', function(e){ //forms emit this when they
 });
 
 document.addEventListener('multi-change', function(e){ //multiforms emit this type of event when they are done a certain task
-	multiForms[e.detail.name][e.detail.program]["state"] = e.detail.info.state; //update state globals to save position
-	if(e.detail.info.data) multiForms[e.detail.name][e.detail.program]["data"] = e.detail.info.data;
+	multiForms[e.detail.name][e.detail.program]["state"] = e.detail.state; //update state globals to save position
 	var event = new CustomEvent('multi-change', {"detail": e.detail}); 
 	document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
 });
@@ -100,12 +99,7 @@ document.addEventListener('multi-state-ready', function(e){ //multiforms emit th
 	populateFieldsWithStorage(e.detail.id);
 });
 
-document.addEventListener('resetup-validation', function(e){
-	setupValidationHandlers(e.detail.id);
-	setupBadInputPrevention(e.detail.id);
-});
-
-var setupValidationHandlers = function(formName){
+var setupValidationHandlers = function(formName){ //error messages and form submission
 	$('#'+formName).validate({
 		submitHandler: function(form){
 			var formSel = '#' + formName;
@@ -122,7 +116,8 @@ var setupValidationHandlers = function(formName){
 			});
 			$('#review').fadeOut(89, function(){ //put in the new buttons
 				$("<formline />").insertBefore($('#back')).append(
-					$("<button id='revise'>Revise</button>").hide().fadeIn(89).insertBefore($('#back')).click(function(){ //revise handler
+					//revise handler
+					$("<button id='revise'>Revise</button>").hide().fadeIn(89).insertBefore($('#back')).click(function(){ 
 						$('#revise,  #submit').each(function(){$(this).fadeOut(89, function(){$(this).remove();$(formSel +' #review').fadeIn(89)})});
 						var $labels = $('label');
 						$labels.each(function(i){
@@ -155,7 +150,8 @@ var setupValidationHandlers = function(formName){
 						});
 					})
 				);
-				$("<button id='submit'>Submit</button>").hide().fadeIn(89).insertAfter($('#revise')).click(function(){ //final submit handler
+				//final submit handler
+				$("<button id='submit'>Submit</button>").hide().fadeIn(89).insertAfter($('#revise')).click(function(){ 
 					var formURL = $(formSel).attr('action');
 					var formData = new FormData($(formSel)[0]); 
 					$.ajax({                                                    
@@ -170,12 +166,12 @@ var setupValidationHandlers = function(formName){
 							if(data.success){
 								var hash = window.location.hash.split("/");
 								if(data.store){
-									if(!storage[hash[4]]) storage[hash[4]] = {};
-									if(!storage[hash[4]][hash[2]]) storage[hash[4]][hash[2]] = {};
-									for(var item in data.store){
-										storage[hash[4]][hash[2]][item] = data.store[item]; //locally store it
-									}
-									console.log(storage[hash[4]][hash[2]]);
+									//if(!storage[hash[4]]) storage[hash[4]] = {};
+									//if(!storage[hash[4]][hash[2]]) storage[hash[4]][hash[2]] = {};
+									//for(var item in data.store){
+									//	storage[hash[4]][hash[2]][item] = data.store[item]; //locally store it
+									//}
+									//console.log(storage[hash[4]][hash[2]]);
 									socket.emit('store', {form: hash[4], program: hash[2], data:data.store}); //ask the server to store this junk too (maybe not later dunno by)
 								}
 								if(multiForms[hash[4]] && multiForms[hash[4]][hash[2]]){ //if it is a multiform we know about
@@ -184,7 +180,7 @@ var setupValidationHandlers = function(formName){
 										$(this).html("Data submitted successfully").fadeIn(89).delay(800).fadeOut(89, function(){
 											var newstate = (multiForms[hash[4]][hash[2]].state + 1) % parseInt($('#'+hash[4]).attr('states'));
 											console.log(newstate);
-											var event = new CustomEvent('multi-change', {"detail": {"info": {state:newstate, data:multiForms[hash[4]][hash[2]].data}, "name": hash[4], "program": hash[2]}}); //go to the next state
+											var event = new CustomEvent('multi-change', {"detail": {state:newstate, "name": hash[4], "program": hash[2]}}); //go to the next state
 											document.dispatchEvent(event);
 										});
 									});
@@ -210,34 +206,54 @@ var setupValidationHandlers = function(formName){
 					});
 				});
 			});
-			$('form label').each(function(i, label){ //show the user what they submitted
-				if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
-					var radio = $(this).attr('for');
-					if($('#'+radio).prop('checked')){
-						$('#'+radio).click(function(e){e.preventDefault();});
+			//stuff you actually see happen when clicking the "review" button starts here
+			$('input[special]').each(function(j, input){ //does stuff with specials
+				var specials = $(this).attr('special').split(" ");
+				for(var item in specials){
+					switch(specials[item]){
+						case "pos":
+							$(this).val($(this).val().replace(/[^0-9\.]/g,'')); //only decimal and 0-9 allowed
+							break;
+						case "int":
+							$(this).val($(this).val().replace(/[^0-9\-]/g,'')); //only negative and 0-9 allowed
+							break;
+						default:
+							break;
 					}
-					else{
-						$('#'+radio).addClass('faded').prop('disabled', true);
-						$(this).addClass('faded');
-					}
-				}
-				else if($(this).attr('type') == "textarea"){
-					var val = $(this).attr('for');
-					$('#'+val).fadeOut(89, function(){
-						$("<span class='textarea-span'/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
-					});
-				}
-				else{
-					var val = $(this).attr('for');
-					$('#'+val).fadeOut(89, function(){
-						$("<span/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
+					$(this).val($(this).val().replace(/[{}]/g,'')); //anyone actually doing this would just edit this script but hey
+				}				
+				if(j == $(this).length - 1){ //like a budget callback
+					//show the user what they submitted
+					$('form label').each(function(i, label){ 
+						if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
+							var radio = $(this).attr('for');
+							if($('#'+radio).prop('checked')){
+								$('#'+radio).click(function(e){e.preventDefault();});
+							}
+							else{
+								$('#'+radio).addClass('faded').prop('disabled', true);
+								$(this).addClass('faded');
+							}
+						}
+						else if($(this).attr('type') == "textarea"){
+							var val = $(this).attr('for');
+							$('#'+val).fadeOut(89, function(){
+								$("<span class='textarea-span'/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
+							});
+						}
+						else{
+							var val = $(this).attr('for');
+							$('#'+val).fadeOut(89, function(){
+								$("<span/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
+							});
+						}
 					});
 				}
 			});
 		}
 	});
 };
-
+//does stuff with specials as well... will have to change two things if any specials are added!!! if the feature expands beyond two types of specials it will be abstracted out
 var setupBadInputPrevention = function(formName){ //prevents users from entering certain characters to an input element if "special" attr is set on the element. special can take a " " separated list of special attributes like a class. 
 	var getSpecialInts = function(specials){
 		var ints = [];
@@ -280,16 +296,36 @@ var setupBadInputPrevention = function(formName){ //prevents users from entering
 };
 
 var populateFieldsWithStorage = function(id){ //inputs with stored values (indicated with a "stored" attr) have their values filled in from the global storage object we're using 
-	console.log("populate");
 	var hash = window.location.hash.split("/");
-	$('#'+id).find('input[stored]').each(function(){
+	var store = [];
+	$('#'+id).find('input[stored]').each(function(i){
 		if($(this).val() == ""){
 			var field = $(this).attr('stored');
 			if(storage[hash[4]] && storage[hash[4]][hash[2]] && storage[hash[4]][hash[2]][field]) $(this).val(storage[hash[4]][hash[2]][field]);
+			else store.push(field);
+		}
+		if(i == $(this).length - 1){
+			if(store.length > 0) socket.emit('getStore', {form:hash[4], program:hash[2], store:store});
 		}
 	});
 };
 
+//socket.io stuff
+socket.on('getStore', function(res){ //try to get a saved value from the server... might replace the local storage all together with this eventually
+	console.log(res);
+	var hash = window.location.hash.split("/");
+	if(res.success && res.program == hash[2] && res.form == hash[4]){
+		for(var item in res.success){ //fill up the fields
+			$('#'+item).val(res.success[item])//this assumes the stored item's name and the field id are the same. this isn't necessarily true
+			if(!storage[hash[4]]) storage[hash[4]] = {};
+			if(!storage[hash[4]][hash[2]]) storage[hash[4]][hash[2]] = {};
+			storage[hash[4]][hash[2]][item] = res.success[item]
+		}
+	}
+});
+//end socket.io stuff
+
+//general stuff
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; 
 var updateDateTime = function(){ //date formatting
 	var now = new Date();

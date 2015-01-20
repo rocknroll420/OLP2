@@ -30,9 +30,9 @@
 		<input id="lon" name="lon" type="hidden" />	
 	</formline>
 	
-	<formline>
+	<formline style="display:none"> <!--- This is hidden for now. Form 0 and 1 are for the same table, 1 just updates, and it only has one depth field so... --->
 		<label for="water_depth">Water Depth (to sea bottom) if observed: </label>
-		<input id="water_depth" name="water_depth" type="number" min="0" special="pos" /> (m)
+		<input id="water_depth" name="water_depth" type="hidden" min="0" special="pos" /> (m)
 	</formline>
 	
 	<formline>
