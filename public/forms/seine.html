@@ -1,14 +1,13 @@
 <div id="seine" states="2">
 </div>
-<shit id="shit">shit</shit>
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
 		document.getElementById('seine').addEventListener('multi-change', function(e){
-			$('#shit').attr('state', e.detail.state); //i also leave after;
 			$.get('/forms/multi/seine-'+e.detail.state+'.html', function(data){ 
+				console.log(data);
 				if(e.detail.firstRun){ //coming in from menu
-					$(this).html(data);
+					$('#seine').html(data);
 					var id = "seine-" + e.detail.state;
 					var event = new CustomEvent("multi-state-ready", {"detail": {"name": "seine", "state": e.detail.state, "id": id}});
 					document.dispatchEvent(event);
@@ -24,16 +23,6 @@
 				}
 			});
 		});
-		
-		$('#shit').click(function(){ //take me out later plz
-			var hash = window.location.hash.split("/");
-			var state = parseInt($(this).attr('state'));
-			state = ++state % 3;
-			$('#revise, #submit').remove();
-			var event = new CustomEvent("multi-change", {"detail": {"state": state, "name": hash[4], "program": hash[2]}});
-			document.dispatchEvent(event);
-		});
-		
 		var event = new CustomEvent("form-ready", {"detail": {"name": "seine", "isMulti": true}});
 		document.dispatchEvent(event);
 	});

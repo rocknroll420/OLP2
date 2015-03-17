@@ -1,44 +1,40 @@
-<h2>Beach Seine Survey - Site Information</h2>
+<h2 id="page-title">Beach Seine Survey</h2>
+<h3 id="section-title">Site Information</h3>
 <form id="seine-0" name="seine-0" action="form/?form=seineSite" method="post" enctype="multipart/form-data" target="iframe">
-	<h3 id="section-title"></h3>
-	
-	Date:<date></date><br><br>
-	
+	<div id="date-time">
+		<date></date><time></time>
+	</div>
 	<formline>
-		<label for="trip_id">Trip ID Number: </label><input id="trip_id" name="trip_id" type="number" required/>
+		<label for="trip_id">Trip ID Number: </label><postlabel><input id="trip_id" name="trip_id" type="number" required/></postlabel>
 	</formline>
-	<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
-	<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
-	
-	<formline>
-		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" />
+	<formline class="paragraphs">
+		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
+		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
-	
 	<formline>
-		<label for="time_h">Observation Time (HH:MM) </label><input id="time_h" name="time_h" for="time_full" type="number" time="hr" min="0" max="23" special="pos int" required/><label for="time_m"> : </label><input id="time_m" name="time_m" for="time_full" type="number" time="min" min="0" max="59" special="pos" required/> <timezone></timezone> 24 hour format
+		<label for="recorder_name">Data Recorder's Name: </label><postlabel><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" /></postlabel>
+	</formline>
+	<formline class="time">
+		<label for="time_h">Observation Time (HH:MM) </label><postlabel><input id="time_h" name="time_h" for="time_full" type="number" time="hr" min="0" max="23" special="pos int" required/></postlabel><label for="time_m"> : </label><postlabel><input id="time_m" name="time_m" for="time_full" type="number" time="min" min="0" max="59" special="pos" required/><span class="units-reminder"><timezone></timezone> 24 hour format</span></postlabel>
 		<input id="time_full" name="time_full" type="hidden"/>
 	</formline>
-	
-	Observation Position:<br>
-	<formline>
-		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" special="pos int" required /> (dd)<label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" special="pos int" required /> (m.mmm)
+	<h4 class="form-section">Observation Position:</h4>
+	<formline class="coords">
+		<label for="latdeg">Latitdue --- Deg: </label><postlabel><input id="latdeg" name="latdeg" type="number" min="46" max="52" special="pos int" required /><span class="units-reminder">(dd)</span></postlabel><label for="latmin">&nbsp;Min:&nbsp;&nbsp;</label><postlabel><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" special="pos int" required /><span class="units-reminder">(m.mmm)</span></postlabel>
 		<input id="lat" name="lat" type="hidden" />
 	</formline>
-	<formline>
-		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" special="pos int" required /> (dd)<label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" special="pos" required /> (m.mmm)
+	<formline class="coords">
+		<label for="londeg">Longitude - Deg: </label><postlabel><input id="londeg" name="londeg" type="number" min="51" max="60" special="pos int" required /><span class="units-reminder">(dd)</span></postlabel><label for="lonmin">&nbsp;Min:&nbsp;&nbsp;</label><postlabel><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" special="pos" required /><span class="units-reminder">(m.mmm)</span></postlabel>
 		<input id="lon" name="lon" type="hidden" />
 	</formline>
-	
 	<formline>
-		<label for="tide_ht">Tide Height (m): </label><input id="tide_ht" name="tide_ht" type="number" min="-5" max="5" step="0.1" /> with 1 decimal. e.g. -0.8
+		<label for="tide_ht">Tide Height (m): </label><postlabel><input id="tide_ht" name="tide_ht" type="number" min="-5" max="5" step="0.1" /><span class="units-reminder">with 1 decimal. e.g. -0.8</span></postlabel>
 	</formline>
-	
-	Add Comments if required (optional):
 	<formline>
-		<textarea name="comment" rows="3" cols="37" />
+		<label for="comment">Add Comments if required (optional): </label><postlabel><textarea id="comment" name="comment" rows="3" cols="37"></textarea></postlabel>
 	</formline>
-	
-	<p>NOTE: Once you have entered the above information you will be able to enter your <b>Species Observations</b>.</p>
-	
-	<button id="review">Review</button>
+	<p class="instructions">NOTE: Once you have entered the above information you will be able to enter your <b>Species Observations</b>.</p>
+	<formline>
+		<button id="review">Review</button>
+	</formline>
 </form>

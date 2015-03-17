@@ -1,39 +1,42 @@
-<h2></h2>
+<h2 id="page-title"></h2>
+<h3 id="section-title"></h3>
 <form id="seine-1" name="seine-1" action="form/?form=seineObs" method="post" enctype="multipart/form-data" target="iframe">
-	<h3 id="section-title"></h3>
-	Date: <date></date>
-	<br/><br/>
+	<div id="date-time">
+		<date></date><time></time>
+	</div>
 	
 	<formline>
-		<label for="seine_id">Beach seine number: </label><input id="seine_id" name="seine_id" type="number" stored="seine_id" special="pos" required />
+		<label for="seine_id">Beach seine number: </label><postlabel><input id="seine_id" name="seine_id" type="number" stored="seine_id" special="pos" required /></postlabel>
 		<p>If the Beach Seine Survey Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
 	
 	<formline>
-		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required />
+		<label for="recorder_name">Data Recorder's Name: </label><postlabel><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required /></postlabel>
 	</formline>
 	
-	<h4 class="underline">Activity 1 - Individual Fish Measurements:</h4>
-	<p>Submit one measurement for <span class="red">each fish</span> that you have collected.</p>
+	<h4 class="form-section">Activity 1 - Individual Fish Measurements:</h4>
+	<p class="instructions">Submit one measurement for <span class="red">each fish</span> that you have collected.</p>
 	<div id="fish-measures">
 	</div>
 	<input id="fish-measures-repeats" name="fish-measures-repeats" type="hidden"/>
 	
-	<h4 class="underline"> Activity 2 - Species Observed:</h4>
-	<p>Check all species that you observed and <span class="red">enter this list</span> once for your Beach Seine Survey.</p>
+	<h4 class="form-section"> Activity 2 - Species Observed:</h4>
+	<p class="instructions">Check all species that you observed and <span class="red">enter this list</span> once for your Beach Seine Survey.</p>
 	<div id="seine-names">
 		<input id="seine-obs-repeats" name="seine-obs-repeats" type="hidden" />
 	</div>
 	
 	<formline>
-		<label for="comment">Add comments (optional): </label><textarea id="comment" name="comment" />
-		<caption for="comment">If you have collected a species that is not in the form please name it in Comments. </caption>
+		<label for="comment">Add comments (optional): </label><postlabel><textarea id="comment" name="comment" /></postlabel>
+		<p class="instructions">If you have collected a species that is not in the form please name it in the comments. </p>
 	</formline>
-	
-	<button id="review">Review</button>
-</frame>
+	<formline>
+		<button id="review">Review</button>
+	</formline>
+</form>
 <script>
 	$(document).ready(function(){
+		var fishTotals = {max:0, repeats:[], real:function(){return this.repeats.length}};
 		var getNames = function(retry){
 			$.get('/select?s=get_seine_names', function(data){
 				data = JSON.parse(data);
@@ -62,7 +65,7 @@
 					var measureFish = {};
 					for(var x in data){
 						$('#seine-names').append($('<formline class="checkboxline"/>')
-							.html('<input id="seine-'+x+'-name" name="seine-'+x+'-name" value="'+data[x].code+'" type="checkbox" /><label for="seine-'+x+'-name">'+data[x].name+' - <span class="sci-name">'+data[x].sci_name+'</span></label>')
+							.html('<input id="seine-'+x+'-name" name="seine-'+x+'-name" value="'+data[x].code+'" type="checkbox" /><label class="fishname" for="seine-'+x+'-name">'+data[x].name+' - <span class="sci-name">'+data[x].sci_name+'</span></label>')
 						);
 						checkboxes.push(false);
 						if(data[x].to_measure){
@@ -74,8 +77,56 @@
 					for(var y in measureFish){
 						measureFishOptionString += "<option value='"+measureFish[y].code+"'>"+measureFish[y].name+"</option>";
 					}
-					measureFishOptionString += "<option value='XX'>Not in list (write name in comment)</option>";
+					measureFishOptionString += "<option value='XX'>Other</option>";
 					
+					$('#fish-measures').append($('<div id="complete-fish" class="tabular">'));
+					
+					var printMeasureFormN = function(n){
+						$('#fish-measures').append($('<formline id="fish-'+n+'-info"/>').append([
+							$('<label for="fish-'+n+'-name"/>').text("Fish species: "),
+							$('<postlabel/>').append($('<select id="fish-'+n+'-name" name="fish-'+n+'-name" />').html(measureFishOptionString).change(function(e){
+								if($(this).val() == "XX"){
+									$('#fish-'+n+'-comment').attr('placeholder', 'Fish species');
+								}
+								else if($('#fish-'+n+'-comment').attr('placeholder') != "Comment?"){
+									$('#fish-'+n+'-comment').attr('placeholder', 'Comment?');
+								}
+							})),
+							$('<label for="fish-'+n+'-length"/>').text("Length: "),
+							$('<postlabel/>').append($('<input id="fish-'+n+'-length" name="fish-'+n+'-length" special="pos int" type="number" min="1" /><span class="units-reminder">(mm)</span>')),
+							$('<label for="fish-'+n+'-comment">').text(""),
+							$('<textarea id="fish-'+n+'-comment" name="fish-'+n+'-comment" placeholder="Comment?"/>'),
+							$('<button id="done" name="done"/>').text('done').click(function(e){
+								e.preventDefault();
+								if($('#fish-'+n+'-name').val() == "" || $('#fish-'+n+'-length').val() == 0 || parseInt($('#fish-'+n+'-length').val()) < 1){
+									//do error stuff
+									return false;
+								}
+								if($('#fish-'+n+'-name').val() == "XX" && $('#fish-'+n+'-comment').val() == ""){
+									//do this error
+									return false;
+								}
+								if(n == 0){
+									$('#complete-fish').append('<div><span>Species</span><span>Length</span><span>Comment</span></div>');
+								}
+								$('#fish-'+n+'-info').find('label, span').each(function(){$(this).remove();})
+								$('#complete-fish').append($('<div id="fish-'+n+'-complete">').append([$('<span/>').text($('#fish-'+n+'-name option:selected').text()), $('<span/>').text($('#fish-'+n+'-length').val()), $('<span/>').text($('#fish-'+n+'-comment').val()),$('#fish-'+n+'-info').hide()]));
+								saveCurrentFishForm();
+								makeNextFishForm();
+								$(this).remove();
+							})
+						]));
+					};
+					var saveCurrentFishForm = function(){
+						$('#fish-measures-repeats').val(fishTotals.repeats.toString());
+					};
+					var makeNextFishForm = function(){
+						printMeasureFormN(fishTotals.max);
+						fishTotals.repeats.push(fishTotals.max++);
+					};
+					makeNextFishForm();
+					
+					/*
 					var done = [];
 					var addFishMeasure = function(x){
 						done.push(false);
@@ -148,7 +199,7 @@
 						$('#fish-'+x+'-chunk').fadeOut(89, function(){$(this).remove();}); 
 						//update the repeats list thing after
 					};
-					
+					*/
 					$('input[type="checkbox"]').change(function(){
 						var i = parseInt($(this).attr('name').split("-")[1]);
 						if($(this).prop('checked')){

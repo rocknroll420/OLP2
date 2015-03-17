@@ -1,11 +1,11 @@
 <div id="plankton" states="3">
 </div>
-<shit id="shit">shit</shit>
+<test id="junk" style="display:none">CHANGE STATE</test>
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
 	$(document).ready(function(){
 		document.getElementById('plankton').addEventListener('multi-change', function(e){
-			$('#shit').attr('state', e.detail.state); //i also leave after;
+			$('#junk').attr('state', e.detail.state); //i also leave after;
 			$.get('/forms/multi/plankton-'+e.detail.state+'.html', function(data){ 
 				if(e.detail.firstRun){ //came in from the menu
 					$('#plankton').html(data);
@@ -25,7 +25,7 @@
 			});
 		});
 		
-		$('#shit').click(function(){ //take me out later plz
+		$('#junk').click(function(){ //take me out later plz
 			var hash = window.location.hash.split("/");
 			var state = parseInt($(this).attr('state'));
 			state = ++state % 3;

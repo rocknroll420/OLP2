@@ -1,44 +1,40 @@
-<h2>Aquatic Invasive Species (AIS) Survey</h2>
-
+<h2 id="page-title">Aquatic Invasive Species (AIS) Survey</h2>
+<h3 id="section-title">&nbsp;</h3>
 <form id="ais" name="ais" action="SETBYJS" method="post" enctype="multipart/form-data" target="iframe">
-	<h3 id="section-title">&nbsp;</h3>
 	<u><b><span id="survey-type" class="red underline">------------------</span></b></u> - If you chose the wrong type of Survey press "Cancel" at the bottom.<br><br>
-	Date: <date></date>
-	<br><br>
-
+	<div id="date-time">
+		<date></date><time></time>
+	</div>
 	<formline>
-		<label for="trip_id">Trip ID Number: </label><input type="number" id="trip_id" name="trip_id" required>
+		<label for="trip_id">Trip ID Number: </label><postlabel><input type="number" id="trip_id" name="trip_id" required></postlabel>
+	</formline>
+	<formline class="paragraphs">
 		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
 		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
-	
 	<formline>
-		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required/>
+		<label for="recorder_name">Data Recorder's Name: </label><postlabel><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required/></postlabel>
 	</formline>
-	
-	<formline>
-		<label for="time_h">Observation Time (HH:MM) </label><input id="time_h" name="time_h" time="hr" for="time_full" type="number" size="3" max="23" min="0" required><label for="time_m"> : </label><input id="time_m" name="time_m" for="time_full" time="min" type="number" size="3" max="59" min="0"> <timezone></timezone> 24 hour format
+	<formline class="time">
+		<label for="time_h">Observation Time (HH:MM) </label><postlabel><input id="time_h" name="time_h" time="hr" for="time_full" type="number" size="3" max="23" min="0" required /></postlabel><label for="time_m"> : </label><postlabel><input id="time_m" name="time_m" for="time_full" time="min" type="number" size="3" max="59" min="0"><span class="units-reminder"><timezone></timezone> 24 hour format</span></postlabel>
 		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
-	
-
-	Observation Position:<br>
-	<formline>
-		<label for="latdeg">Latitude --- Deg </label><input id="latdeg" name="latdeg" type="number" min="46" max="52" required> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)
+	<h4 class="form-section">Observation Position:</h4>
+	<formline class="coords">
+		<label for="latdeg">Latitude --- Deg: </label><postlabel><input id="latdeg" name="latdeg" type="number" min="46" max="52" required><span class="units-reminder">(dd)</span></postlabel><label for="latmin">&nbsp;Min:&nbsp;&nbsp;</label><postlabel><input id="latmin" name="latmin" type="number" min="0" max="59.999" step="0.001" required /><span class="units-reminder">(m.mmm)</span></postlabel>
 		<input id="lat" name="lat" type="hidden" />
 	</formline>
-	<formline>
-		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" min="51" max="60" required> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required> (m.mmm)
+	<formline class="coords">
+		<label for="londeg">Longitude - Deg: </label><postlabel><input id="londeg" name="londeg" type="number" min="51" max="60" required><span class="units-reminder">(dd)</span></postlabel><label for="lonmin">&nbsp;Min:&nbsp;&nbsp;</label><postlabel><input id="lonmin" name="lonmin" type="number" min="0" max="59.999" step="0.001" required><span class="units-reminder">(m.mmm)</span></postlabel>
 		<input id="lon" name="lon" type="hidden" />
 	</formline>
-	
-	<u>Aquatic Invasive Species Observed:</u><br><br>
+	<h4 class="form-section">Aquatic Invasive Species Observed:</h4>
 	<ul id="ais-list">
 	</ul>
-	
 	<input id="rov" name="rov" type="hidden" />
-
-	<button id="review">Review</button>
+	<formline>
+		<button id="review">Review</button>
+	</formline>
 </form>
 <a id="back" href="">[Cancel and Return to Module Menu]</a>
 <script>
@@ -69,18 +65,18 @@
 					$('#ais-list').append($('<input id="ais-repeats" name="ais-repeats" type="hidden" value="" />'));
 					for(var x in data.success){
 						(x < data.success.length - 1) ? $('#ais-repeats').val($('#ais-repeats').val() + x + ",") : $('#ais-repeats').val($('#ais-repeats').val() + x);
-						$('#ais-list').append($("<formline/>")
+						$('#ais-list').append($("<formline class='radios'/>")
 							.append($('<input type="hidden" id="ais-'+x+'-code" name="ais-'+x+'-code" value="'+data.success[x].ais_code+'"/>'))
-							.append($('<span/>').html(data.success[x].name + "<i>("+data.success[x].sci_name+")</i>"))
+							.append($('<span class="label-style"/>').html(data.success[x].name + " <i>("+data.success[x].sci_name+")</i>"))
 							.append($('<input type="radio" value="n-a" />').prop('checked', true).attr('id', 'ais-'+x+'-na').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-na" type="radio"/>').text("Did Not Check"))
 							.append($('<input type="radio" value="no"/>').attr('id', 'ais-'+x+'-no').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-no" type="radio"/>').text("No"))
 							.append($('<input type="radio" value="yes"/>').attr('id', 'ais-'+x+'-yes').attr('name', 'ais-'+x+'-obs')).append($('<label for="ais-' + x + '-yes" type="radio"/>').text("Yes"))
-							.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT: ").hide()).append($('<input type="number" special="pos int" max="999" value="-99" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
+							.append($('<label for="ais-'+x+'-cnt" type="count" />').text("COUNT:").hide()).append($('<input type="number" special="pos int" max="999" value="-99" id="ais-'+x+'-cnt" name="ais-'+x+'-cnt">').hide())
 						);
 						$('input[type="radio"][name="ais-'+x+'-obs"]').change(function(){
 							var i = $(this).attr('id').split("-")[1];
 							if($(this).val() == "yes"){
-								$('#ais-'+i+'-cnt').val("").fadeIn(89);
+								$('#ais-'+i+'-cnt').val(1).fadeIn(89);
 								$('label[for="ais-'+i+'-cnt"]').fadeIn(89);
 							}
 							else{

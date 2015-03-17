@@ -69,13 +69,14 @@ document.addEventListener('form-ready', function(e){ //forms emit this when they
 		}
 	}
 	if(e.detail.isMulti){
+		console.log("multi");
 		if(typeof multiForms[e.detail.name] == "undefined"){
 			var progress = {};
-			progress[hash[2]] = {state: 0, data: {}};
+			progress[hash[2]] = {state: 0};
 			multiForms[e.detail.name] = progress;
 		}
 		else if(typeof multiForms[e.detail.name][hash[2]] == "undefined"){
-			multiForms[e.detail.name][hash[2]] = {state: 0, data: {}};
+			multiForms[e.detail.name][hash[2]] = {state: 0};
 		}
 		var event = new CustomEvent('multi-change', {"detail": {"state": multiForms[e.detail.name][hash[2]].state, "name": hash[4], "program": hash[2], "firstRun": true}}); //firstRun keeps the form from fading in instantly again when the specific multi-form is loaded from the multi-form start page 
 		document.getElementById(e.detail.name).dispatchEvent(event);
@@ -88,8 +89,13 @@ document.addEventListener('form-ready', function(e){ //forms emit this when they
 
 document.addEventListener('multi-change', function(e){ //multiforms emit this type of event when they are done a certain task
 	multiForms[e.detail.name][e.detail.program]["state"] = e.detail.state; //update state globals to save position
-	var event = new CustomEvent('multi-change', {"detail": e.detail}); 
-	document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
+	if(e.detail.state != 0){
+		var event = new CustomEvent('multi-change', {"detail": e.detail}); 
+		document.getElementById(e.detail.name).dispatchEvent(event); //every multiform will need to be wrapped in a div with the id of its name to work
+	}
+	else{
+		window.location.hash = "#!/program/"+e.detail.program;
+	}
 });
 
 document.addEventListener('multi-state-ready', function(e){ //multiforms emit this type of event after they finish loading a new state
@@ -114,38 +120,60 @@ var setupValidationHandlers = function(formName){ //error messages and form subm
 				var t = ($(this).val().length > 1) ? $(this).val() : ($(this).val().length == 1) ? "0"+$(this).val() : "00";
 				($(this).attr('time') == "hr") ? $for.val(t + ":") : $for.val($for.val() + t);
 			});
-			$('#review').fadeOut(89, function(){ //put in the new buttons
+			$('#review').parent().fadeOut(89, function(){ //put in the new buttons
 				$("<formline />").insertBefore($('#back')).append(
 					//revise handler
 					$("<button id='revise'>Revise</button>").hide().fadeIn(89).insertBefore($('#back')).click(function(){ 
-						$('#revise,  #submit').each(function(){$(this).fadeOut(89, function(){$(this).remove();$(formSel +' #review').fadeIn(89)})});
+						$('#revise,  #submit').each(function(){$(this).parent().fadeOut(89, function(){$(this).remove();$(formSel +' #review').parent().fadeIn(89)})});
 						var $labels = $('label');
 						$labels.each(function(i){
-							var $label = $(this);
-							if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
-								var $radio = $(this).attr('for');
-								$radio = $('#'+$radio);
-								if($radio.prop('checked')){
-									$radio.unbind('click');
+							//var $label = $(this);
+							//if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
+							//	var $radio = $(this).attr('for');
+							//	$radio = $('#'+$radio);
+							//	if($radio.prop('checked')){
+							//		$radio.unbind('click');
+							//	}
+							//	else{
+							//		$radio.removeClass('faded').prop('disabled', false);
+							//		$(this).removeClass('faded');
+							//	}
+							//}
+							//else{
+							//	$(this).find('span').fadeOut(89, function(){
+							//		$(this).remove();
+							//		if($label.attr('type') == "count"){
+							//			var i = $label.attr('for').split("-")[1];
+							//			if($('#ais-'+i+'-yes').prop('checked')){
+							//				$('#ais-'+i+'-cnt').fadeIn(89);
+							//			}
+							//		}
+							//		else{
+							//			$('#'+$label.attr('for')).fadeIn(89);
+							//		}
+							//	});
+							//}
+							var _this = this;
+							var $friend = $('#'+$(_this).attr('for'));
+							if($friend.is(':checkbox') || $friend.is(':radio')){
+								if($friend.is('.faded')){
+									$friend.removeClass('faded').prop('disabled', false);
+									$(_this).removeClass('faded');
 								}
-								else{
-									$radio.removeClass('faded').prop('disabled', false);
-									$(this).removeClass('faded');
+								else if($(_this).is('.review-data')){
+									$(_this).removeClass('review-data');
 								}
 							}
 							else{
-								$(this).find('span').fadeOut(89, function(){
+								$friend.parent().find("span.review-data").fadeOut(89, function(){
 									$(this).remove();
-									if($label.attr('type') == "count"){
-										var i = $label.attr('for').split("-")[1];
-										if($('#ais-'+i+'-yes').prop('checked')){
-											$('#ais-'+i+'-cnt').fadeIn(89);
-										}
-									}
-									else{
-										$('#'+$label.attr('for')).fadeIn(89);
-									}
+									$friend.fadeIn(89);
 								});
+							}
+							//just hacked in for now because it's the only exception
+							if(formName ==  "seine-1"){
+								$('#complete-fish').removeClass('review');
+								$('#complete-fish').next().show();
 							}
 						});
 					})
@@ -181,7 +209,7 @@ var setupValidationHandlers = function(formName){ //error messages and form subm
 											var newstate = (multiForms[hash[4]][hash[2]].state + 1) % parseInt($('#'+hash[4]).attr('states'));
 											console.log(newstate);
 											var event = new CustomEvent('multi-change', {"detail": {state:newstate, "name": hash[4], "program": hash[2]}}); //go to the next state
-											document.dispatchEvent(event);
+											document.dispatchEvent(event);											
 										});
 									});
 								}
@@ -207,49 +235,76 @@ var setupValidationHandlers = function(formName){ //error messages and form subm
 				});
 			});
 			//stuff you actually see happen when clicking the "review" button starts here
-			$('input[special]').each(function(j, input){ //does stuff with specials
-				var specials = $(this).attr('special').split(" ");
-				for(var item in specials){
-					switch(specials[item]){
-						case "pos":
-							$(this).val($(this).val().replace(/[^0-9\.]/g,'')); //only decimal and 0-9 allowed
-							break;
-						case "int":
-							$(this).val($(this).val().replace(/[^0-9\-]/g,'')); //only negative and 0-9 allowed
-							break;
-						default:
-							break;
+			//$('input[special]').each(function(j, input){ //does stuff with specials
+			//	var specials = $(this).attr('special').split(" ");
+			//	for(var item in specials){
+			//		switch(specials[item]){
+			//			case "pos":
+			//				$(this).val($(this).val().replace(/[^0-9\.]/g,'')); //only decimal and 0-9 allowed
+			//				break;
+			//			case "int":
+			//				$(this).val($(this).val().replace(/[^0-9\-]/g,'')); //only negative and 0-9 allowed
+			//				break;
+			//			default:
+			//				break;
+			//		}
+			//		$(this).val($(this).val().replace(/[{}]/g,'')); //anyone actually doing this would just edit this script but hey
+			//	}				
+			//	if(j == $(this).length - 1){ //like a budget callback
+			//		//show the user what they submitted
+			//		$('form label').each(function(i, label){ 
+			//			console.log($(this).attr('for'));
+			//			if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
+			//				var radio = $(this).attr('for');
+			//				if($('#'+radio).prop('checked')){
+			//					$('#'+radio).click(function(e){e.preventDefault();});
+			//				}
+			//				else{
+			//					$('#'+radio).addClass('faded').prop('disabled', true);
+			//					$(this).addClass('faded');
+			//				}
+			//			}
+			//			else if($(this).attr('type') == "textarea"){
+			//				var val = $(this).attr('for');
+			//				$('#'+val).fadeOut(89, function(){
+			//					$("<span class='textarea-span'/>").text($(this).val()).hide().fadeIn(89).appendTo(label.next());
+			//				});
+			//			}
+			//			else{
+			//				var val = $(this).attr('for');
+			//				$('#'+val).fadeOut(89, function(){
+			//					$("<span/>").text($(this).val()).hide().fadeIn(89).appendTo(label.next());
+			//				});
+			//			}
+			//		});
+			//	}
+			//});
+			$('form label').each(function(i, label){
+				var _this = this;
+				var $friend = $('#'+$(_this).attr('for'));
+				if($friend.is(':checkbox') || $friend.is(':radio')){
+					if($friend.prop('checked')){
+						$friend.click(function(e){e.preventDefault();});
+						$(_this).addClass('review-data');
 					}
-					$(this).val($(this).val().replace(/[{}]/g,'')); //anyone actually doing this would just edit this script but hey
-				}				
-				if(j == $(this).length - 1){ //like a budget callback
-					//show the user what they submitted
-					$('form label').each(function(i, label){ 
-						if($(this).attr('type') == "radio" || $(this).attr('type') == "checkbox"){
-							var radio = $(this).attr('for');
-							if($('#'+radio).prop('checked')){
-								$('#'+radio).click(function(e){e.preventDefault();});
-							}
-							else{
-								$('#'+radio).addClass('faded').prop('disabled', true);
-								$(this).addClass('faded');
-							}
-						}
-						else if($(this).attr('type') == "textarea"){
-							var val = $(this).attr('for');
-							$('#'+val).fadeOut(89, function(){
-								$("<span class='textarea-span'/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
-							});
-						}
-						else{
-							var val = $(this).attr('for');
-							$('#'+val).fadeOut(89, function(){
-								$("<span/>").text($(this).val()).hide().fadeIn(89).appendTo(label);
-							});
-						}
-					});
+					else{
+						$friend.addClass('faded').prop('disabled', true);
+						$(_this).addClass('faded');
+					}
+				}
+				else{
+					if($friend.is(':visible')){ //don't want hidden counts doing stuff
+						$friend.fadeOut(89, function(){
+							return ($friend.is('select')) ? $("<span class ='review-data'/>").text($friend.find("option:selected").text()).hide().fadeIn(89).insertBefore($friend) : $("<span class ='review-data'/>").text($friend.val()).hide().fadeIn(89).insertBefore($friend);
+						});
+					}
 				}
 			});
+			//just hacked in for now because it's the only exception
+			if(formName ==  "seine-1"){
+				$('#complete-fish').addClass('review');
+				$('#complete-fish').next().hide();
+			}
 		}
 	});
 };
@@ -334,8 +389,8 @@ var updateDateTime = function(){ //date formatting
 	day += " " + now.getFullYear();
 	var time = now.toLocaleTimeString();
 	if($('date').length < 1) console.log("no date");
-	$('date').html("Date: " + day);
-	$('time').html("Time: " + time);
+	$('date').html(day);
+	$('time').html(time);
 };
 
 var shift = false; //so we know if shift is down

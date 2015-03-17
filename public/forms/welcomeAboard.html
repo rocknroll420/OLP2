@@ -1,7 +1,9 @@
-<h2>Welcome Aboard!</h2>
+<h2 id="page-title">Welcome Aboard!</h2>
 
 <h3 id="section-title"></h3>
-<date></date><time></time><br><br>
+<div id="date-time">
+	<date></date><time></time>
+</div>
 
 <form id="welcomeAboard" name="welcomeAboard" action="form/?form=welcomeAboard" method="post" enctype="multipart/form-data" target="iframe">
 
@@ -9,42 +11,54 @@
 
 <formline>
 	<label for="school">School: </label>
-	<select id="school" name="school" value="" required>
-		<option value="O'Donel High School - Mount Pearl">O'Donel High School - Mount Pearl</option>
-		<option value="Holy Trinity High School - Torbay">Holy Trinity High School - Torbay</option>
-		<option value="Bishops College - St. John's">Bishops College - St. John's</option>
-		<option value="Holy Spirit High School - Manuels">Holy Spirit High School - Manuels</option>
-		<option value="Queen Elizabeth Regional High School - Foxtrap">Queen Elizabeth Regional High School - Foxtrap</option>
-		<option value="Roncalli Central High School - Avondale">Roncalli Central High School - Avondale</option>
-		<option SELECTED value=""></option>
-	</select>
+	<postlabel>
+		<select id="school" name="school" value="" required>
+			<option value="O'Donel High School - Mount Pearl">O'Donel High School - Mount Pearl</option>
+			<option value="Holy Trinity High School - Torbay">Holy Trinity High School - Torbay</option>
+			<option value="Bishops College - St. John's">Bishops College - St. John's</option>
+			<option value="Holy Spirit High School - Manuels">Holy Spirit High School - Manuels</option>
+			<option value="Queen Elizabeth Regional High School - Foxtrap">Queen Elizabeth Regional High School - Foxtrap</option>
+			<option value="Roncalli Central High School - Avondale">Roncalli Central High School - Avondale</option>
+			<option SELECTED value=""></option>
+		</select>
+	</postlabel>
 </formline>
 
 <formline>
-	<label for="teacher_name">Teacher's Name: </label><input id="teacher_name" name="teacher_name" type="text" value="" autocomplete="off" required>
+	<label for="teacher_name">Teacher's Name: </label>
+	<postlabel>
+		<input id="teacher_name" name="teacher_name" type="text" value="" autocomplete="off" required>
+	</postlabel>
 </formline>
 
 <formline>
 	<label for="vessel">Vessel: </label>
-	<select id="vessel" name="vessel" value="" required>
-		<option value="Coastal Explorer">Coastal Explorer</option>
-		<option value="Seal Islander">Seal Islander</option>
-		<option SELECTED value=""></option>
-	</select>
+	<postlabel>
+		<select id="vessel" name="vessel" value="" required>
+			<option value="Coastal Explorer">Coastal Explorer</option>
+			<option value="Seal Islander">Seal Islander</option>
+			<option SELECTED value=""></option>
+		</select>
+	</postlabel>
 </formline>
 
 <formline>
 	<label for="waterBody">Water Body: </label>
-	<select id="waterBody" name="waterBody" value="" required>
-		<option value="Bonne Bay">Bonne Bay</option>
-		<option value="Newman Sound">Newman Sound</option>
-		<option value="Conception Bay">Conception Bay</option>
-		<option SELECTED value=""></option>
-	</select>
+	<postlabel>
+		<select id="waterBody" name="waterBody" value="" required>
+			<option value="Bonne Bay">Bonne Bay</option>
+			<option value="Newman Sound">Newman Sound</option>
+			<option value="Conception Bay">Conception Bay</option>
+			<option SELECTED value=""></option>
+		</select>
+	</postlabel>
 </formline>
 
 <formline>
-	<label for="weather">Weather: </label><input id="weather" name="weather" type="text" value="" autocomplete="off">
+	<label for="weather">Weather: </label>
+	<postlabel>
+		<input id="weather" name="weather" type="text" value="" autocomplete="off">
+	</postlabel>
 </formline>
 
 <formline>

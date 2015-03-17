@@ -1,44 +1,38 @@
-<h2>Plankton Tow 1</h2>
-<h3 id="section-title"></h3>
+<h2 id="page-title">Plankton Tow</h2>
+<h3 id="section-title">Plankton Tow Survey - End Point</h3>
 <form id="plankton-1" name="plankton-1" action="form/?form=planktonEnd" method="post" enctype="multipart/form-data" target="iframe">
-	<h3>Plankton Tow Survey - End Point</h3>
-	Date: <date></date>
-	<br><br>
-	
+	<div id="date-time">
+		<date></date><time></time>	
+	</div>
 	<formline>
-		<label for="trip_id">Trip ID Number: </label><input id="trip_id" type="number" name="trip_id" required />
+		<label for="trip_id">Trip ID Number: </label><postlabel><input id="trip_id" type="number" name="trip_id" required /></postlabel>
+	</formline>
+	<formline class="paragraphs">
 		<p>If you don't see a Trip ID Number above it may mean that you did not enter your "Welcome Aboard" information.  If you did not enter that information please Cancel this form and enter the "Welcome Aboard" information now.</p>
 		<p>Otherwise, if the Trip ID Number is BLANK or NOT CORRECT you must ENTER THE CORRECT NUMBER now.</p>
 	</formline>
-	
 	<formline>
-		<label for="tow_id">Tow ID (temp): </label><input id="tow_id" name="tow_id" type="number" stored="tow_id" />
+		<label for="tow_id">Tow ID (temp): </label><postlabel><input id="tow_id" name="tow_id" type="number" stored="tow_id" /></postlabel>
 	</formline>
-	
 	<formline>	
-		<label for="recorder_name">Data Recorder's Name: </label><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required />
+		<label for="recorder_name">Data Recorder's Name: </label><postlabel><input id="recorder_name" name="recorder_name" type="text" autocomplete="off" required /></postlabel>
 	</formline>
-	
-	<formline>
-		<label for="time_h">End Time (HH:MM) </label><input id="time_h" name="time_h" time="hr" type="number" min="0" max="23" special="pos int" required /><label for="time_m"> : </label><input id="time_m" name="time_m" time="min" type="number" min="0" max="59" special="pos int" required /><timezone></timezone> 24 hour format
+	<formline class="time">
+		<label for="time_h">End Time (HH:MM) </label><postlabel><input id="time_h" name="time_h" time="hr" type="number" min="0" max="23" special="pos int" required /></postlabel><label for="time_m"> : </label><postlabel><input id="time_m" name="time_m" time="min" type="number" min="0" max="59" special="pos int" required /><span class="units-reminder"><timezone></timezone> 24 hour format</span></postlabel>
 		<input id="time_full" name="time_full" type="hidden" />
 	</formline>
-	
-	Position of Tow End Point:<br>
-	<formline>
-		<label for="latdeg">Latitdue --- Deg </label><input id="latdeg" name="latdeg" type="number" special="pos int" min="46" max="52" required /> (dd) <label for="latmin">&nbsp;&nbsp;&nbsp;Min </label><input id="latmin" name="latmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/> (m.mmm)
+	<h4 class="form-section">Position of Tow End Point:</h4>
+	<formline class="coords">
+		<label for="latdeg">Latitdue --- Deg: </label><postlabel><input id="latdeg" name="latdeg" type="number" special="pos int" min="46" max="52" required /><span class="units-reminder">(dd)</span></postlabel><label for="latmin">&nbsp;Min:&nbsp;&nbsp;</label><postlabel><input id="latmin" name="latmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/><span class="units-reminder">(m.mmm)</span></postlabel>
 		<input id="lat" name="lat" type="hidden" />
 	</formline>
-	<formline>
-		<label for="londeg">Longitude - Deg </label><input id="londeg" name="londeg" type="number" special="pos int" min="51" max="60" required /> (dd) <label for="lonmin">&nbsp;&nbsp;&nbsp;Min </label><input id="lonmin" name="lonmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/> (m.mmm)<br><br>
+	<formline class="coords">
+		<label for="londeg">Longitude - Deg: </label><postlabel><input id="londeg" name="londeg" type="number" special="pos int" min="51" max="60" required /><span class="units-reminder">(dd)</span></postlabel><label for="lonmin">&nbsp;Min:&nbsp;&nbsp;</label><postlabel><input id="lonmin" name="lonmin" type="number" special="pos" min="0" max="59.999" step="0.001" required/><span class="units-reminder">(m.mmm)</span></postlabel>
 		<input id="lon" name="lon" type="hidden" />	
 	</formline>
-	
 	<formline>
-		<label for="water_depth">Water Depth (to sea bottom) if observed: </label>
-		<input id="water_depth" name="water_depth" type="number" min="0" special="pos" /> (m)
+		<label for="water_depth">Water Depth (to sea bottom) if observed: </label><postlabel><input id="water_depth" name="water_depth" type="number" min="0" special="pos" /><span class="units-reminder">(m)</span></postlabel>
 	</formline>
-
 	<formline>
 		<button id='review'>Review Data</button>
 	</formline>
