@@ -21,7 +21,7 @@ li{
 #top-bar{
 	background:blue;
 	padding:3px;
-	/*display:none;*/
+	display:none;/* hide for non-dev */
 }
 
 #top-bar a:hover{
