@@ -21,7 +21,7 @@ li{
 #top-bar{
 	background:blue;
 	padding:3px;
-	display:none;/* hide for non-dev */
+	display:none;
 }
 
 #top-bar a:hover{
@@ -180,6 +180,10 @@ textarea{
 
 #back{
 	display:block;
+}
+
+#fish-measures button#done{
+	margin-left:7em;
 }
 
 .tabular{

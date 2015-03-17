@@ -234,7 +234,7 @@ app.get('/select', function(req, res){
 
 var users = {};
 io.on('connection', function(socket){
-	users[socket.id] = {socket: socket, storage:{}};
+	users[socket.id] = {socket: socket, storage:{globals:{}}};
 	//help.printUsers(users);
 	socket.on('disconnect', function(data){
 		delete users[socket.id];
@@ -242,13 +242,22 @@ io.on('connection', function(socket){
 	});
 	socket.on('store', function(data){
 		if(!data.form || !data.program || !data.data) return; //junk request
-		if(!users[socket.id].storage[data.form]) users[socket.id].storage[data.form] = {};
-		if(!users[socket.id].storage[data.form][data.program]) users[socket.id].storage[data.form][data.program] = {};
-		for(var item in data.data){
-			users[socket.id].storage[data.form][data.program][item] = data.data[item];
+		//console.log(util.inspect(data)); //debug
+		if(data.data.global){
+			delete data.data.global;
+			for(var item in data.data){
+				users[socket.id].storage.globals[item] = data.data[item];
+			}
+		}		
+		else{
+			if(!users[socket.id].storage[data.form]) users[socket.id].storage[data.form] = {};
+			if(!users[socket.id].storage[data.form][data.program]) users[socket.id].storage[data.form][data.program] = {};
+			for(var item in data.data){
+				users[socket.id].storage[data.form][data.program][item] = data.data[item];
+			}
 		}
 	});
-	socket.on('unstore', function(data){ //UNTESTED
+	socket.on('unstore', function(data){ //UNTESTED - also doesn't support global stuff at all
 		if(!data.form || !data.program || !data.data) return; //junk request
 		for(var item in data.data){
 			if(typeof users[socket.id].storage[data.form][data.program][item] != "undefined") delete users[socket.id].storage[data.form][data.program][item];
@@ -263,9 +272,16 @@ io.on('connection', function(socket){
 				if(!res.success) res.success = {};
 				res["success"][data.store[i]] = users[socket.id].storage[data.form][data.program][data.store[i]];
 			}
-			else{ 
-				if(!res.failure) res.failure = {};
-				res["failure"][data.store[i]] = "Not stored!";
+			else{
+				if(users[socket.id].storage.globals[data.store[i]]){
+					if(!res.success) res.success = {};
+					if(!res.success.globals) res.success.globals = {};
+					res["success"]["globals"][data.store[i]] = users[socket.id].storage.globals[data.store[i]];
+				}
+				else{
+					if(!res.failure) res.failure = {};
+					res["failure"][data.store[i]] = "Not stored!";
+				}
 			}
 		}
 		socket.emit('getStore', res);

@@ -1,7 +1,7 @@
 (function($){
 
 var socket = io(); //get the socket.io going
-var storage = {}; //holds on to whatever you want
+var storage = {globals:{}}; //holds on to whatever you want; just form stuff right now so globals are trip_id and that's it i think
 
 //HASH CHANGE STUFF
 window.onhashchange = function(evt){
@@ -84,6 +84,7 @@ document.addEventListener('form-ready', function(e){ //forms emit this when they
 	else{
 		setupValidationHandlers(e.detail.name);
 		setupBadInputPrevention(e.detail.name);
+		populateFieldsWithStorage(e.detail.name);
 	}
 });
 
@@ -356,8 +357,9 @@ var populateFieldsWithStorage = function(id){ //inputs with stored values (indic
 	$('#'+id).find('input[stored]').each(function(i){
 		if($(this).val() == ""){
 			var field = $(this).attr('stored');
-			if(storage[hash[4]] && storage[hash[4]][hash[2]] && storage[hash[4]][hash[2]][field]) $(this).val(storage[hash[4]][hash[2]][field]);
-			else store.push(field);
+			//if(storage[hash[4]] && storage[hash[4]][hash[2]] && storage[hash[4]][hash[2]][field]) $(this).val(storage[hash[4]][hash[2]][field]).attr('disabled', 'true');
+			//else if(storage.globals[field]) $(this).val(storage.globals[field]).attr('disabled', 'true');
+			/*else*/ store.push(field); //taking out loading it from stuff for now because we want the trip_id to be able to overwrite
 		}
 		if(i == $(this).length - 1){
 			if(store.length > 0) socket.emit('getStore', {form:hash[4], program:hash[2], store:store});
@@ -369,9 +371,16 @@ var populateFieldsWithStorage = function(id){ //inputs with stored values (indic
 socket.on('getStore', function(res){ //try to get a saved value from the server... might replace the local storage all together with this eventually
 	console.log(res);
 	var hash = window.location.hash.split("/");
-	if(res.success && res.program == hash[2] && res.form == hash[4]){
+	if(res.success && res.program == hash[2] && res.form == hash[4]){ //the second two conditions here are dumb
+		if(res.success.globals){
+			for(var item in res.success.globals){
+				$('#'+item).val(res.success.globals[item])/*.attr('disabled', 'true')*/;
+				storage.globals[item] = res.success.globals[item];
+			}
+			delete res.success.globals; //to not have to change that following loop
+		}
 		for(var item in res.success){ //fill up the fields
-			$('#'+item).val(res.success[item])//this assumes the stored item's name and the field id are the same. this isn't necessarily true
+			$('#'+item).val(res.success[item])/*.attr('disabled', 'true')*/;//this assumes the stored item's name and the field id are the same. this isn't necessarily true
 			if(!storage[hash[4]]) storage[hash[4]] = {};
 			if(!storage[hash[4]][hash[2]]) storage[hash[4]][hash[2]] = {};
 			storage[hash[4]][hash[2]][item] = res.success[item]
